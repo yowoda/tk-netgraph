@@ -16,4 +16,9 @@ The following features are supported right now:
 Missing:
 - support for directed edges
 - not all configuration options are accounted for (e.g. can not disable antialiasing)
-- API is missing some abstract components 
+- API is missing some abstract components
+
+# Examples:
+Examples can be found in the [examples folder](examples/)
+
+![Example application](examples/screenshots/graph.png)
