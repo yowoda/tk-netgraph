@@ -37,7 +37,6 @@ __all__: t.Sequence[str] = (
     "NetCanvas",
 )
 
-print(type(os.environ.get("NETGRAPH_USE_CTK")))
 USE_CTK_IF_AVAILABLE: t.Final[bool] = os.environ.get("NETGRAPH_USE_CTK", "true") != "false"
 has_antialiasing = False
 
