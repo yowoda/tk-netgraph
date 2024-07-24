@@ -26,9 +26,8 @@ from netgraph._objects import _ObjectContainer,  CanvasEdgeTextObject, _convert_
 from netgraph import _math
 
 if t.TYPE_CHECKING:
-    from netgraph import NetCanvas, NetManager, EdgeTextConfig
-    from netgraph.api._node import CanvasNode
-    from netgraph.api import _config, _objects
+    from netgraph import NetManager
+    from netgraph.api import _config, _objects, CanvasNode, NetCanvas, EdgeTextConfig
     from netgraph._types import CanvasObjectsLike
 
 __all__: t.Sequence[str] = (
@@ -218,7 +217,20 @@ class CanvasEdge(_edge.CanvasEdge):
             label_point = weight_point = _math._calc_offset_point(center_point, node1_pos, node2_pos, distance / 2)
             points = (*node1_pos, *center_point, *node2_pos)
 
-        yield from self._canvas.create_aa_line(*points, fill="#000", width=1.5, smooth=True, splinesteps=self._config.line_segments)
+        kw = {
+            "fill": "#000",
+            "width": self._config.line_width,
+            "smooth": True,
+            "splinesteps": self._config.line_segments
+        }
+
+        if self._config.antialiased:
+            create_line = self._canvas.create_aa_line
+
+        else:
+            create_line = self._canvas.create_line
+
+        yield from create_line(*points, **kw)
         yield from self._draw_text(self._label, label_point, config=self._config.label_config)
         yield from self._draw_text(str(self._weight) if self._weight else "", weight_point, config=self._config.weight_config)
 

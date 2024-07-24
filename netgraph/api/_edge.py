@@ -25,10 +25,14 @@ import typing as t
 from netgraph._traits import CanvasAware
 
 if t.TYPE_CHECKING:
-    from netgraph import NetCanvas, NetManager, EdgeConfig
-    from netgraph.api._node import CanvasNode
-    from netgraph.api._objects import ObjectContainer
+    from netgraph import NetManager
+    from netgraph.api import CanvasNode, ObjectContainer, EdgeConfig, NetCanvas
     from netgraph._types import CanvasObjectsLike
+
+__all__: t.Sequence[str] = (
+    "DragMode",
+    "CanvasEdge"
+)
 
 
 class DragMode(enum.Enum):

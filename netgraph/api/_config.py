@@ -22,8 +22,14 @@ import abc
 import typing as t
 
 if t.TYPE_CHECKING:
-    from netgraph.api._edge import CanvasEdge, DragMode
-    from netgraph.api._node import CanvasNode
+    from netgraph.api import CanvasEdge, DragMode, CanvasNode
+
+__all__: t.Sequence[str] = (
+    "EdgeTextConfig",
+    "EdgeConfig",
+    "NodeConfig",
+    "NetConfig"
+)
 
 
 class EdgeTextConfig(abc.ABC):
@@ -95,7 +101,7 @@ class EdgeConfig(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def width(self) -> float:
+    def line_width(self) -> float:
         """
         The width of the line
         """

@@ -24,10 +24,10 @@ import typing as t
 from netgraph.api import _config, _edge
 from netgraph._node import CanvasNode as CanvasNodeImpl
 from netgraph._edge import CanvasEdge as CanvasEdgeImpl
+from netgraph._objects import _ObjectContainer as ObjectContainerImpl
 
 if t.TYPE_CHECKING:
-    from netgraph.api._edge import CanvasEdge
-    from netgraph.api._node import CanvasNode
+    from netgraph.api import CanvasEdge, CanvasNode, ObjectContainer
 
 __all__: t.Sequence[str] = (
     "NetConfig",
@@ -45,10 +45,10 @@ class EdgeTextConfig(_config.EdgeTextConfig):
 class EdgeConfig(_config.EdgeConfig):
     factory: type[CanvasEdge] = CanvasEdgeImpl
     antialiased: bool = False
-    label_config: EdgeTextConfig = EdgeTextConfig(gap=20)
-    weight_config: EdgeTextConfig = EdgeTextConfig(gap=-20)
+    label_config: _config.EdgeTextConfig = EdgeTextConfig(gap=20)
+    weight_config: _config.EdgeTextConfig = EdgeTextConfig(gap=-20)
     line_color: str = "black"
-    width: float = 1.5
+    line_width: float = 1.5
     drag_mode: _edge.DragMode = _edge.DragMode.COMPONENT_ONLY
     offset: int = -150
     line_segments: int = 30
@@ -56,12 +56,13 @@ class EdgeConfig(_config.EdgeConfig):
 @dataclass
 class NodeConfig(_config.NodeConfig):
     factory: type[CanvasNode] = CanvasNodeImpl
-    antialiased: bool = True
+    antialiased: bool = False
     enable_dragging: bool = True
     label_color: str = "black"
 
 @dataclass
 class NetConfig(_config.NetConfig):
     enable_zoom: bool = True
-    edge_config: EdgeConfig = EdgeConfig()
-    node_config: NodeConfig = NodeConfig()
+    edge_config: _config.EdgeConfig = EdgeConfig()
+    node_config: _config.NodeConfig = NodeConfig()
+    object_container: ObjectContainer = ObjectContainerImpl

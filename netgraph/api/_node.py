@@ -24,10 +24,13 @@ import typing as t
 from netgraph._traits import CanvasAware
 
 if t.TYPE_CHECKING:
-    from netgraph import NetManager, NetCanvas, NodeConfig
-    from netgraph.api._objects import ObjectContainer
-    from netgraph.api._edge import CanvasEdge
+    from netgraph import NetManager
+    from netgraph.api import ObjectContainer, CanvasEdge, NetCanvas, NodeConfig
     from netgraph._types import CanvasObjectsLike
+
+__all__: t.Sequence[str] = (
+    "CanvasNode",
+)
 
 
 class CanvasNode(abc.ABC, CanvasAware):
@@ -41,7 +44,7 @@ class CanvasNode(abc.ABC, CanvasAware):
         label: str,
         *,
         config: NodeConfig,
-        obj_container: type[ObjectContainer]#=_ObjectContainer
+        obj_container: type[ObjectContainer]
     ) -> None:
         """
         The constructor of the canvas object

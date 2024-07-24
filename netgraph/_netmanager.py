@@ -25,7 +25,7 @@ from netgraph import NetConfig
 from netgraph.api import _node, _edge, _config
 
 if t.TYPE_CHECKING:
-    from netgraph  import NetCanvas
+    from netgraph.api  import NetCanvas
 
 __all__: t.Sequence[str] = (
     "NetManager",
@@ -79,7 +79,9 @@ class NetManager:
         if config is None:
             config = self._config.node_config
             
-        node = self._config.node_config.factory(self, self._canvas, label, config=config)
+        node = self._config.node_config.factory(
+            self, self._canvas, label, config=config, obj_container=self._config.object_container
+        )
         return node
     
     def create_edge(
@@ -92,7 +94,10 @@ class NetManager:
         if config is None:
             config = self._config.edge_config
             
-        edge = self._config.edge_config.factory(self, self._canvas, nodes, label, weight, config=config)
+        edge = self._config.edge_config.factory(
+            self, self._canvas, nodes, label,
+            weight, config=config, obj_container=self._config.object_container
+        )
 
         for node in nodes:
             node.edges.add(edge)

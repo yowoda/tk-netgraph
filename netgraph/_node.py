@@ -20,14 +20,14 @@ from __future__ import annotations
 
 import typing as t
 
-from netgraph.api import _node, _objects, _config
+from netgraph.api import _node
 from netgraph._objects import _ObjectContainer, _convert_to_canvas_objects
 
 if t.TYPE_CHECKING:
     import tkinter as tk
 
-    from netgraph import NetCanvas, NetManager
-    from netgraph.api._edge import CanvasEdge
+    from netgraph import NetManager
+    from netgraph.api import CanvasEdge, NetCanvas, NodeConfig, ObjectContainer
     from netgraph._types import CanvasObjectsLike
 
 __all__: t.Sequence[str] = (
@@ -43,8 +43,8 @@ class CanvasNode(_node.CanvasNode):
         canvas: NetCanvas, 
         label: str,
         *,
-        config: _config.NodeConfig,
-        obj_container: type[_objects.ObjectContainer]=_ObjectContainer
+        config: NodeConfig,
+        obj_container: type[ObjectContainer]=_ObjectContainer
     ) -> None:
         self._manager = manager
         self._canvas = canvas
@@ -85,11 +85,11 @@ class CanvasNode(_node.CanvasNode):
         return t.cast(str, self._obj_container.canvas_id)
     
     @property
-    def obj_container(self) -> _objects.ObjectContainer:
+    def obj_container(self) -> ObjectContainer:
         return self._obj_container
     
     @property
-    def config(self) -> _config.NodeConfig:
+    def config(self) -> NodeConfig:
         return self._config
     
     @property
@@ -120,6 +120,11 @@ class CanvasNode(_node.CanvasNode):
         self._obj_container.add(*objects)
     
     def draw(self, pos: tuple[int, int]) -> CanvasObjectsLike:
-        yield from self._canvas.create_double_circle(pos, 10, 50)
+        radius = 50
+        if self._config.antialiased:
+            yield from self._canvas.create_aa_double_circle(pos, 10, radius)
+        else:
+            yield from self._canvas.create_oval(pos[0]-radius, pos[1]-radius, pos[0]+radius, pos[1]+radius, fill=self._canvas.cget("bg"))
+
         yield self._canvas.create_text(pos, text=self._label, fill=self._config.label_color)
     

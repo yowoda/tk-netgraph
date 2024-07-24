@@ -26,7 +26,12 @@ from netgraph._traits import CanvasAware, Draggable
 if t.TYPE_CHECKING:
     import tkinter as tk
 
-    from netgraph import NetCanvas
+    from netgraph.api import NetCanvas
+
+__all__: t.Sequence[str] = (
+    "CanvasObject",
+    "ObjectContainer"
+)
 
 class CanvasObject(abc.ABC, CanvasAware):
     __slots__: t.Sequence[str] = ()
