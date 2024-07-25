@@ -18,7 +18,6 @@
 
 import typing as t
 
-from netgraph.api._objects import CanvasObject
+from netgraph.api import CanvasObject
 
 CanvasObjectsLike = t.Generator[t.Union[int, CanvasObject], None, None]
-

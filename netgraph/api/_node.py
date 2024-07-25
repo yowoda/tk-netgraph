@@ -25,12 +25,10 @@ from netgraph._traits import CanvasAware
 
 if t.TYPE_CHECKING:
     from netgraph import NetManager
-    from netgraph.api import ObjectContainer, CanvasEdge, NetCanvas, NodeConfig
     from netgraph._types import CanvasObjectsLike
+    from netgraph.api import CanvasEdge, NetCanvas, NodeConfig, ObjectContainer
 
-__all__: t.Sequence[str] = (
-    "CanvasNode",
-)
+__all__: t.Sequence[str] = ("CanvasNode",)
 
 
 class CanvasNode(abc.ABC, CanvasAware):
@@ -38,76 +36,59 @@ class CanvasNode(abc.ABC, CanvasAware):
 
     @abc.abstractmethod
     def __init__(
-        self, 
-        manager: NetManager, 
-        canvas: NetCanvas, 
+        self,
+        manager: NetManager,
+        canvas: NetCanvas,
         label: str,
         *,
         config: NodeConfig,
-        obj_container: type[ObjectContainer]
+        obj_container: type[ObjectContainer],
     ) -> None:
-        """
-        The constructor of the canvas object
-        """
+        """The constructor of the canvas object"""
 
     @property
     @abc.abstractmethod
     def manager(self) -> NetManager:
-        """
-        The NetManager instance
-        """
+        """The NetManager instance"""
 
     @property
     @abc.abstractmethod
     def component_id(self) -> t.Optional[str]:
-        """
-        The tag of the component that the node is apart of
-        """
+        """The tag of the component that the node is apart of"""
 
     @property
     @abc.abstractmethod
     def label(self) -> str:
-        """
-        The label of the node. Returns an empty string if the node has no label.
-        """
+        """The label of the node. Returns an empty string if the node has no label"""
 
     @property
     @abc.abstractmethod
     def obj_container(self) -> ObjectContainer:
-        """
-        The object container instance that holds canvas objects related to the node and the node itself
-        """
+        """The object container instance that holds canvas objects related to the node and the node itself"""
 
     @property
     @abc.abstractmethod
     def config(self) -> NodeConfig:
-        """
-        The configuration for this node
-        """
+        """The configuration for this node"""
 
     @property
     @abc.abstractmethod
     def edges(self) -> set[CanvasEdge]:
-        """
-        A list of edges that the node is apart of, which need to be updated when the node is dragged 
-        """
+        """A list of edges that the node is apart of, which need to be updated when the node is dragged"""
 
     @abc.abstractmethod
     def get_center(self) -> tuple[float, float]:
-        """
-        Returns the center of the node
-        """
+        """Returns the center of the node"""
 
     @abc.abstractmethod
     def draw(self, pos: tuple[int, int]) -> CanvasObjectsLike:
         """
         Draws the canvas objects that are needed for the node onto the canvas.
-        This method should be overriden if you want to change the node display (e.g. display a rectangle instead of a circle)
+        This method should be overriden if you want to change the node display
+        (e.g. display a rectangle instead of a circle).
         Important: yield all objects IDs that you receive when creating canvas objects
         """
 
     @abc.abstractmethod
     def render(self, pos: tuple[int, int]) -> None:
-        """
-        Render the node and manage the object container
-        """
+        """Render the node and manage the object container"""

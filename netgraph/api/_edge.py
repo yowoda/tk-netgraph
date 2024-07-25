@@ -26,13 +26,10 @@ from netgraph._traits import CanvasAware
 
 if t.TYPE_CHECKING:
     from netgraph import NetManager
-    from netgraph.api import CanvasNode, ObjectContainer, EdgeConfig, NetCanvas
     from netgraph._types import CanvasObjectsLike
+    from netgraph.api import CanvasNode, EdgeConfig, NetCanvas, ObjectContainer
 
-__all__: t.Sequence[str] = (
-    "DragMode",
-    "CanvasEdge"
-)
+__all__: t.Sequence[str] = ("DragMode", "CanvasEdge")
 
 
 class DragMode(enum.Enum):
@@ -51,66 +48,50 @@ class CanvasEdge(abc.ABC, CanvasAware):
     def __init__(
         self,
         manager: NetManager,
-        canvas: NetCanvas, 
-        nodes: tuple[CanvasNode, CanvasNode], 
-        label: str, 
+        canvas: NetCanvas,
+        nodes: tuple[CanvasNode, CanvasNode],
+        label: str,
         weight: t.Optional[int],
         *,
         config: EdgeConfig,
-        obj_container: type[ObjectContainer]
+        obj_container: type[ObjectContainer],
     ) -> None:
-        """
-        The constructor of the canvas object
-        """
+        """The constructor of the canvas object"""
 
     @property
     @abc.abstractmethod
     def manager(self) -> NetManager:
-        """
-        The NetManager instance
-        """
+        """The NetManager instance"""
 
     @property
     @abc.abstractmethod
     def component_id(self) -> t.Optional[str]:
-        """
-        The tag of the component that the edge is apart of
-        """
+        """The tag of the component that the edge is apart of"""
 
     @property
     @abc.abstractmethod
     def endpoints(self) -> tuple[CanvasNode, CanvasNode]:
-        """
-        The two vertices connected by the edge. The vertices will be the same if the edge is a loop.
-        """
+        """The two vertices connected by the edge. The vertices will be the same if the edge is a loop"""
 
     @property
     @abc.abstractmethod
     def label(self) -> str:
-        """
-        The label of the edge. Returns an empty string if the edge has no label.
-        """
+        """The label of the edge. Returns an empty string if the edge has no label"""
 
     @property
     @abc.abstractmethod
     def weight(self) -> t.Optional[int]:
-        """
-        The weight of the edge. Returns None if the edge has no weight.
-        """
+        """The weight of the edge. Returns None if the edge has no weight"""
 
     @property
     @abc.abstractmethod
     def obj_container(self) -> ObjectContainer:
-        """
-        The object container instance that holds canvas objects related to the edge and the edge itself
-        """
+        """The object container instance that holds canvas objects related to the edge and the edge itself"""
 
     @property
     @abc.abstractmethod
     def config(self) -> EdgeConfig:
-        """
-        The configuration for this edge
-        """
+        """The configuration for this edge"""
 
     @property
     @abc.abstractmethod
@@ -123,15 +104,11 @@ class CanvasEdge(abc.ABC, CanvasAware):
     @property
     @abc.abstractmethod
     def is_selfloop(self) -> bool:
-        """
-        Whether the edge connects the given node to itself
-        """
+        """Whether the edge connects the given node to itself"""
 
     @abc.abstractmethod
     def update(self) -> None:
-        """
-        Update the coordinates of the edge
-        """
+        """Update the coordinates of the edge"""
 
     @abc.abstractmethod
     def draw(self) -> CanvasObjectsLike:
@@ -143,6 +120,4 @@ class CanvasEdge(abc.ABC, CanvasAware):
 
     @abc.abstractmethod
     def render(self) -> None:
-       """
-       Render the edge and manage the object container
-       """
+        """Render the edge and manage the object container"""

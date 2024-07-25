@@ -23,7 +23,9 @@ import typing as t
 
 if t.TYPE_CHECKING:
     import tkinter as tk
+
     from netgraph import NetCanvas
+
 
 @t.runtime_checkable
 class CanvasAware(t.Protocol):
@@ -32,16 +34,13 @@ class CanvasAware(t.Protocol):
     @property
     @abc.abstractmethod
     def canvas(self) -> NetCanvas:
-        """
-        The canvas class
-        """
+        """The canvas class"""
 
     @property
     @abc.abstractmethod
     def canvas_id(self) -> t.Union[str, int]:
-        """
-        The object's canvas ID
-        """
+        """The object's canvas ID"""
+
 
 @t.runtime_checkable
 class Draggable(t.Protocol):
@@ -50,9 +49,7 @@ class Draggable(t.Protocol):
     @property
     @abc.abstractmethod
     def drag_data(self) -> tuple[int, int]:
-        """
-        The drag data of this component
-        """
+        """The drag data of this component"""
 
     @abc.abstractmethod
     def on_click(self, event: tk.Event) -> None:

@@ -19,9 +19,14 @@
 import math
 import typing as t
 
-SELFLOOP_CENTER_Y_APPROX: t.Final[float] = 0.9375 # Factor to approximate the actual y coordinate of the center top point of the line
+SELFLOOP_CENTER_Y_APPROX: t.Final[float] = (
+    0.9375  # Factor to approximate the actual y coordinate of the center top point of the line
+)
 
-def _calc_text_position(text_pos, node1_pos: tuple[float, float], node2_pos: tuple[float, float], offset: float) -> tuple[float, float, float]:
+
+def _calc_text_position(
+    text_pos, node1_pos: tuple[float, float], node2_pos: tuple[float, float], offset: float
+) -> tuple[float, float, float]:
     x0, y0 = node1_pos
     x1, y1 = node2_pos
 
@@ -36,7 +41,10 @@ def _calc_text_position(text_pos, node1_pos: tuple[float, float], node2_pos: tup
 
     return *point, angle
 
-def _calc_offset_point(pos: tuple[float, float], node1_pos: tuple[float, float], node2_pos: tuple[float, float], offset: float) -> tuple[float, float]:
+
+def _calc_offset_point(
+    pos: tuple[float, float], node1_pos: tuple[float, float], node2_pos: tuple[float, float], offset: float
+) -> tuple[float, float]:
     x0, y0 = node1_pos
     x1, y1 = node2_pos
 
@@ -49,16 +57,20 @@ def _calc_offset_point(pos: tuple[float, float], node1_pos: tuple[float, float],
 
     return pos[0] + off_x, pos[1] + off_y
 
-def _calc_curved_center(node1_pos: tuple[float, float], node2_pos: tuple[float, float], offset: float):
+
+def _calc_curved_center(
+    node1_pos: tuple[float, float], node2_pos: tuple[float, float], offset: float
+) -> tuple[float, float]:
     x0, y0 = node1_pos
     x1, y1 = node2_pos
-    a = (x1 + x0)/2
-    b = (y1 + y0)/2
-    beta = (math.pi/2) - math.atan2((y1-y0), (x1-x0))
+    a = (x1 + x0) / 2
+    b = (y1 + y0) / 2
+    beta = (math.pi / 2) - math.atan2((y1 - y0), (x1 - x0))
 
     xa = a - offset * math.cos(beta)
     ya = b + offset * math.sin(beta)
     return (xa, ya)
+
 
 def _calc_selfloop_points(bbox: tuple[int, int, int, int], offset: float) -> tuple[int, ...]:
     center_x = (bbox[0] + bbox[2]) / 2
@@ -67,12 +79,18 @@ def _calc_selfloop_points(bbox: tuple[int, int, int, int], offset: float) -> tup
     # the self-loop edge line contains the following points
     x_offset = 30
     return (
-        center_x-x_offset, center_y,
-        center_x - offset, center_y - offset,
-        center_x, center_y - offset - height * 0.25,
-        center_x + offset, center_y - offset,
-        center_x+x_offset, center_y
+        center_x - x_offset,
+        center_y,
+        center_x - offset,
+        center_y - offset,
+        center_x,
+        center_y - offset - height * 0.25,
+        center_x + offset,
+        center_y - offset,
+        center_x + x_offset,
+        center_y,
     )
+
 
 def _calc_selfloop_text_pos(bbox: tuple[int, int, int, int], offset: float) -> tuple[int, int]:
     height = bbox[3] - bbox[1]

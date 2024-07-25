@@ -28,81 +28,58 @@ if t.TYPE_CHECKING:
 
     from netgraph.api import NetCanvas
 
-__all__: t.Sequence[str] = (
-    "CanvasObject",
-    "ObjectContainer"
-)
+__all__: t.Sequence[str] = ("CanvasObject", "ObjectContainer")
+
 
 class CanvasObject(abc.ABC, CanvasAware):
     __slots__: t.Sequence[str] = ()
 
     @abc.abstractmethod
     def coords(self, *positions: float) -> None:
-        """
-        Change the coordinates of the object
-        """
+        """Change the coordinates of the object"""
+
 
 class ObjectContainer(abc.ABC, CanvasAware, Draggable):
     __slots__: t.Sequence[str] = ()
 
     @abc.abstractmethod
-    def __init__(self, canvas: NetCanvas, *, disabled: bool=False) -> None:
-        """
-        The constructor of the object container
-        """
+    def __init__(self, canvas: NetCanvas, *, disabled: bool = False) -> None:
+        """The constructor of the object container"""
 
     @property
     @abc.abstractmethod
     def objects(self) -> list[CanvasObject]:
-        """
-        The list of managed objects
-        """
+        """The list of managed objects"""
 
     @property
     @abc.abstractmethod
     def tags(self) -> list[str]:
-        """
-        A list of tags added to this container
-        """
+        """A list of tags added to this container"""
 
     @abc.abstractmethod
     def add(self, *objects: CanvasObject) -> None:
-        """
-        Adds the canvas object with the given ID to the container
-        """
+        """Adds the canvas object with the given ID to the container"""
 
     @abc.abstractmethod
     def add_tag(self, tag: str) -> None:
-        """
-        Add the given tag to this container
-        """
+        """Add the given tag to this container"""
 
     @abc.abstractmethod
     def remove_tag(self, tag: str) -> None:
-        """
-        Remove the given tag from this container
-        """
+        """Remove the given tag from this container"""
 
     @abc.abstractmethod
     def remove(self, *object_ids: CanvasObject) -> None:
-        """
-        Removes the canvas object with the given ID from the container
-        """
+        """Removes the canvas object with the given ID from the container"""
 
     @abc.abstractmethod
     def coords(self, *positions: float) -> None:
-        """
-        Change the coordinates of all objects in the container
-        """
+        """Change the coordinates of all objects in the container"""
 
     @abc.abstractmethod
     def lower(self) -> None:
-        """
-        Lower all objects in the stacking order
-        """
+        """Lower all objects in the stacking order"""
 
     @abc.abstractmethod
     def bind(self, event: str, callback: t.Callable[[tk.Event], None]) -> None:
-        """
-        Bind a callback to the given event
-        """
+        """Bind a callback to the given event"""

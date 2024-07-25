@@ -21,35 +21,42 @@ from __future__ import annotations
 import tkinter as tk
 import typing as t
 
-from netgraph.api import _edge
-from netgraph._objects import _ObjectContainer,  CanvasEdgeTextObject, _convert_to_canvas_objects
 from netgraph import _math
+from netgraph._objects import CanvasEdgeTextObject, _convert_to_canvas_objects, _ObjectContainer
+from netgraph.api import _edge
 
 if t.TYPE_CHECKING:
     from netgraph import NetManager
-    from netgraph.api import _config, _objects, CanvasNode, NetCanvas, EdgeTextConfig
     from netgraph._types import CanvasObjectsLike
+    from netgraph.api import CanvasNode, EdgeTextConfig, NetCanvas, _config, _objects
 
-__all__: t.Sequence[str] = (
-    "CanvasEdge",
-)
+__all__: t.Sequence[str] = ("CanvasEdge",)
+
 
 class CanvasEdge(_edge.CanvasEdge):
     __slots__: t.Sequence[str] = (
-        "_manager", "_canvas", "_nodes", "_label", "_weight", 
-        "_obj_container", "_config", "_pan_data", "_component_id", "_position"
+        "_manager",
+        "_canvas",
+        "_nodes",
+        "_label",
+        "_weight",
+        "_obj_container",
+        "_config",
+        "_pan_data",
+        "_component_id",
+        "_position",
     )
 
     def __init__(
         self,
         manager: NetManager,
         canvas: NetCanvas,
-        nodes: tuple[CanvasNode, CanvasNode], 
+        nodes: tuple[CanvasNode, CanvasNode],
         label: str,
-        weight: t.Optional[int]=None,
+        weight: t.Optional[int] = None,
         *,
         config: _config.EdgeConfig,
-        obj_container: type[_objects.ObjectContainer]=_ObjectContainer,
+        obj_container: type[_objects.ObjectContainer] = _ObjectContainer,
     ) -> None:
         self._manager = manager
         self._canvas = canvas
@@ -99,12 +106,12 @@ class CanvasEdge(_edge.CanvasEdge):
             new_id = self._manager.component_manager.add_component()
             _new_objects.extend(self._nodes)
 
-        
         # Add all new objects to the component, the edge as well
         for object in _new_objects:
             object.component_id = new_id
-            object.obj_container.add_tag(new_id) # make sure the objects have an additional tag, the component id so you're able to select a specific component
-        
+            object.obj_container.add_tag(new_id)  # make sure the objects have an additional tag (the component id)
+            # so you're able to select a specific component
+
         self._manager.component_manager[new_id].extend(_new_objects)
 
         self._canvas.tag_bind(self.canvas_id, "<Button-1>", self._drag_start, "+")
@@ -117,15 +124,15 @@ class CanvasEdge(_edge.CanvasEdge):
     @property
     def component_id(self) -> t.Optional[str]:
         return self._component_id
-    
+
     @component_id.setter
     def component_id(self, id_: t.Optional[str]) -> None:
         self._component_id = id_
 
-    def _drag_start(self, event: tk.Event):
+    def _drag_start(self, event: tk.Event) -> None:
         self._pan_data = (event.x, event.y)
 
-    def _drag(self, event: tk.Event):
+    def _drag(self, event: tk.Event) -> None:
         delta_x = event.x - self._pan_data[0]
         delta_y = event.y - self._pan_data[1]
 
@@ -144,19 +151,19 @@ class CanvasEdge(_edge.CanvasEdge):
     @property
     def endpoints(self) -> tuple[CanvasNode, CanvasNode]:
         return self._nodes
-    
+
     @property
     def label(self) -> str:
         return self._label
-    
+
     @property
     def canvas_id(self) -> str:
         return t.cast(str, self._obj_container.canvas_id)
-    
+
     @property
     def obj_container(self) -> _objects.ObjectContainer:
         return self._obj_container
-    
+
     @property
     def config(self) -> _config.EdgeConfig:
         return self._config
@@ -164,11 +171,11 @@ class CanvasEdge(_edge.CanvasEdge):
     @property
     def weight(self) -> t.Optional[int]:
         return self._weight
-    
+
     @property
     def position(self) -> int:
         return self._position
-    
+
     @position.setter
     def position(self, pos: int) -> None:
         self._position = pos
@@ -176,14 +183,14 @@ class CanvasEdge(_edge.CanvasEdge):
     @property
     def is_selfloop(self) -> bool:
         return self._nodes[0] == self._nodes[1]
-    
+
     def update(self) -> None:
         if self.is_selfloop:
             node = self._nodes[0]
             box = self._canvas.bbox(node.canvas_id)
             offset = abs(self._config.offset) / 2 * self._position
             points = _math._calc_selfloop_points(box, offset)
-        
+
         else:
             node1_pos = self._nodes[0].get_center()
             node2_pos = self._nodes[1].get_center()
@@ -193,7 +200,7 @@ class CanvasEdge(_edge.CanvasEdge):
             points = (*node1_pos, *center_point, *node2_pos)
 
         self._obj_container.coords(*points)
-    
+
     def draw(self) -> CanvasObjectsLike:
         node1_pos = self._nodes[0].get_center()
         node2_pos = self._nodes[1].get_center()
@@ -221,30 +228,29 @@ class CanvasEdge(_edge.CanvasEdge):
             "fill": "#000",
             "width": self._config.line_width,
             "smooth": True,
-            "splinesteps": self._config.line_segments
+            "splinesteps": self._config.line_segments,
         }
 
-        if self._config.antialiased:
-            create_line = self._canvas.create_aa_line
-
-        else:
-            create_line = self._canvas.create_line
+        create_line = self._canvas.create_aa_line if self._config.antialiased else self._canvas.create_line
 
         yield from create_line(*points, **kw)
         yield from self._draw_text(self._label, label_point, config=self._config.label_config)
-        yield from self._draw_text(str(self._weight) if self._weight else "", weight_point, config=self._config.weight_config)
+        yield from self._draw_text(
+            str(self._weight) if self._weight else "", weight_point, config=self._config.weight_config
+        )
 
     def _draw_text(self, text: str, pos: tuple[float, float], *, config: EdgeTextConfig) -> CanvasObjectsLike:
         node1_pos = self._nodes[0].get_center()
         node2_pos = self._nodes[1].get_center()
         x, y, angle = (
-            _math._calc_text_position(pos, node1_pos, node2_pos, config.gap)
-            if self.is_selfloop is False
-            else (*pos, 0)
+            _math._calc_text_position(pos, node1_pos, node2_pos, config.gap) if self.is_selfloop is False else (*pos, 0)
         )
-        yield CanvasEdgeTextObject(self._canvas.create_text(
-            x, y, text=text, angle=angle, fill=config.color
-        ), self._canvas, edge=self, config=config)
+        yield CanvasEdgeTextObject(
+            self._canvas.create_text(x, y, text=text, angle=angle, fill=config.color),
+            self._canvas,
+            edge=self,
+            config=config,
+        )
 
     def render(self) -> None:
         ids = self.draw()

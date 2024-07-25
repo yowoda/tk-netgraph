@@ -22,14 +22,9 @@ import abc
 import typing as t
 
 if t.TYPE_CHECKING:
-    from netgraph.api import CanvasEdge, DragMode, CanvasNode
+    from netgraph.api import CanvasEdge, CanvasNode, DragMode
 
-__all__: t.Sequence[str] = (
-    "EdgeTextConfig",
-    "EdgeConfig",
-    "NodeConfig",
-    "NetConfig"
-)
+__all__: t.Sequence[str] = ("EdgeTextConfig", "EdgeConfig", "NodeConfig", "NetConfig")
 
 
 class EdgeTextConfig(abc.ABC):
@@ -38,16 +33,12 @@ class EdgeTextConfig(abc.ABC):
     @property
     @abc.abstractmethod
     def gap(self) -> int:
-        """
-        The distance between the text and the line
-        """
+        """The distance between the text and the line"""
 
     @property
     @abc.abstractmethod
     def color(self) -> str:
-        """
-        The color of the text
-        """
+        """The color of the text"""
 
 
 class EdgeConfig(abc.ABC):
@@ -57,7 +48,7 @@ class EdgeConfig(abc.ABC):
     @abc.abstractmethod
     def factory(self) -> type[CanvasEdge]:
         """
-        The class to instantiate when using the `create_edge` method of `NetManager`. 
+        The class to instantiate when using the `create_edge` method of `NetManager`.
         The class must inherit from the `CanvasEdge` interface.
         """
 
@@ -73,23 +64,17 @@ class EdgeConfig(abc.ABC):
     @property
     @abc.abstractmethod
     def label_config(self) -> EdgeTextConfig:
-        """
-        The configuration for the positioning and appearance of the label
-        """
+        """The configuration for the positioning and appearance of the label"""
 
     @property
     @abc.abstractmethod
     def weight_config(self) -> EdgeTextConfig:
-        """
-        The configuration for the positioning and appearance of the weight
-        """
+        """The configuration for the positioning and appearance of the weight"""
 
     @property
     @abc.abstractmethod
     def line_color(self) -> str:
-        """
-        The color of the line
-        """
+        """The color of the line"""
 
     @property
     @abc.abstractmethod
@@ -102,23 +87,18 @@ class EdgeConfig(abc.ABC):
     @property
     @abc.abstractmethod
     def line_width(self) -> float:
-        """
-        The width of the line
-        """
+        """The width of the line"""
 
     @property
     @abc.abstractmethod
     def drag_mode(self) -> DragMode:
-        """
-        The drag mode of the edge
-        """
+        """The drag mode of the edge"""
 
     @property
     @abc.abstractmethod
     def offset(self) -> int:
-        """
-        The offset of the edge and the gap to other edges which have the same endpoints
-        """
+        """The offset of the edge and the gap to other edges which have the same endpoints"""
+
 
 class NodeConfig(abc.ABC):
     __slots__: t.Sequence[str] = ()
@@ -127,30 +107,25 @@ class NodeConfig(abc.ABC):
     @abc.abstractmethod
     def factory(self) -> type[CanvasNode]:
         """
-        The class to instantiate when using the `create_node` method of `NetManager`. 
+        The class to instantiate when using the `create_node` method of `NetManager`.
         The class must implement the `CanvasNode` interface.
         """
 
     @property
     @abc.abstractmethod
     def antialiased(self) -> bool:
-        """
-        Whether to draw antialiased circles.
-        """
+        """Whether to draw antialiased circles"""
 
     @property
     @abc.abstractmethod
     def enable_dragging(self) -> bool:
-        """
-        Whether to allow dragging the node
-        """
+        """Whether to allow dragging the node"""
 
     @property
     @abc.abstractmethod
     def label_color(self) -> str:
-        """
-        The color of the label
-        """
+        """The color of the label"""
+
 
 class NetConfig(abc.ABC):
     __slots__: t.Sequence[str] = ()
@@ -158,20 +133,14 @@ class NetConfig(abc.ABC):
     @property
     @abc.abstractmethod
     def enable_zoom(self) -> bool:
-        """
-        Whether to allow zooming on nodes and edges
-        """
+        """Whether to allow zooming on nodes and edges"""
 
     @property
     @abc.abstractmethod
     def edge_config(self) -> EdgeConfig:
-        """
-        The edge configuration that will be applied to all created edges unless overriden
-        """
+        """The edge configuration that will be applied to all created edges unless overriden"""
 
     @property
     @abc.abstractmethod
     def node_config(self) -> NodeConfig:
-        """
-        The node configuration that will be applied to all created node unless overriden
-        """
+        """The node configuration that will be applied to all created node unless overriden"""

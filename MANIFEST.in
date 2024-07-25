@@ -1,0 +1,4 @@
+graft netgraph
+include pyproject.toml
+include README.md
+global-exclude *.py[cod]

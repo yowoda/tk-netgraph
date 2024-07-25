@@ -21,19 +21,18 @@ from __future__ import annotations
 import itertools
 import typing as t
 
-from netgraph.api import _objects
 from netgraph import _math
+from netgraph.api import _objects
 
 if t.TYPE_CHECKING:
     import tkinter as tk
-    from netgraph import NetCanvas, EdgeTextConfig
-    from netgraph.api._edge import CanvasEdge
-    from netgraph._types import CanvasObjectsLike
 
-__all__: t.Sequence[str] = (
-    "CanvasObject",
-    "CanvasEdgeTextObject"
-)
+    from netgraph import EdgeTextConfig, NetCanvas
+    from netgraph._types import CanvasObjectsLike
+    from netgraph.api._edge import CanvasEdge
+
+__all__: t.Sequence[str] = ("CanvasObject", "CanvasEdgeTextObject")
+
 
 class CanvasObject(_objects.CanvasObject):
     __slots__: t.Sequence[str] = ("_object_id", "_canvas")
@@ -45,13 +44,14 @@ class CanvasObject(_objects.CanvasObject):
     @property
     def canvas_id(self) -> int:
         return self._object_id
-    
+
     @property
     def canvas(self) -> NetCanvas:
         return self._canvas
-    
+
     def coords(self, *positions: float) -> None:
         self._canvas.coords(self._object_id, *positions)
+
 
 class CanvasEdgeTextObject(CanvasObject):
     __slots__: t.Sequence[str] = ("_edge", "_config")
@@ -61,7 +61,7 @@ class CanvasEdgeTextObject(CanvasObject):
         self._config = config
 
         super().__init__(*args, **kwargs)
-    
+
     def coords(self, *positions: float) -> None:
         if self._edge.is_selfloop:
             node = self._edge.endpoints[0]
@@ -81,13 +81,15 @@ class CanvasEdgeTextObject(CanvasObject):
 
         self.canvas.coords(self.canvas_id, x, y)
 
+
 class _ObjectContainer(_objects.ObjectContainer):
     """A container class that manages tkinter canvas objects using their object ID"""
+
     _id_iter = itertools.count()
 
     __slots__: t.Sequence[str] = ("_disabled", "_canvas", "_id", "_drag_x", "_drag_y", "_tags", "_objects")
 
-    def __init__(self, canvas: NetCanvas, *, disabled: bool=False) -> None:
+    def __init__(self, canvas: NetCanvas, *, disabled: bool = False) -> None:
         self._canvas = canvas
         self._id = f"tag{next(self._id_iter)}"
 
@@ -114,11 +116,11 @@ class _ObjectContainer(_objects.ObjectContainer):
     @property
     def canvas_id(self) -> str:
         return self._id
-    
+
     def _create_drag_binds(self) -> None:
         self._canvas.tag_bind(self._id, "<ButtonPress-1>", self.on_click)
         self._canvas.tag_bind(self._id, "<B1-Motion>", self.on_drag)
-    
+
     def _get_object_ids(self) -> tuple[int, ...]:
         return t.cast(tuple[int, ...], self._canvas.find_withtag(self._id))
 
@@ -162,11 +164,11 @@ class _ObjectContainer(_objects.ObjectContainer):
     @property
     def drag_data(self) -> tuple[int, int]:
         return self._drag_x, self._drag_y
-    
+
     def on_click(self, event: tk.Event) -> None:
         self._drag_x = event.x
         self._drag_y = event.y
-    
+
     def on_drag(self, event: tk.Event) -> None:
         delta_x = event.x - self._drag_x
         delta_y = event.y - self._drag_y
@@ -178,15 +180,13 @@ class _ObjectContainer(_objects.ObjectContainer):
         if self._canvas.active_node is not None:
             self._canvas.stop_dynamic_line()
 
+
 def _convert_to_canvas_objects(canvas: NetCanvas, ids: CanvasObjectsLike) -> list[_objects.CanvasObject]:
-    """
-    Converts the given canvas IDs or objects to a CanvasObject instance 
-    """
+    """Converts the given canvas IDs or objects to a CanvasObject instance"""
     objects: list[_objects.CanvasObject] = []
 
     for obj in ids:
         if isinstance(obj, _objects.CanvasObject):
-
             objects.append(obj)
 
         if isinstance(obj, int):

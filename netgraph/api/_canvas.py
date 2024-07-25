@@ -24,30 +24,28 @@ import tkinter as tk
 import typing as t
 
 if t.TYPE_CHECKING:
-    from netgraph.api import CanvasNode, ObjectContainer
     from netgraph._types import CanvasObjectsLike
+    from netgraph.api import CanvasNode, ObjectContainer
 
-__all__: t.Sequence[str] = (
-    "ActiveNode",
-    "NetCanvas"
-)
+__all__: t.Sequence[str] = ("ActiveNode", "NetCanvas")
+
 
 class ActiveNode(abc.ABC):
     __slots__: t.Sequence[str] = ()
-    
+
     @property
     @abc.abstractmethod
     def node(self) -> CanvasNode:
         """
-        The node object that is currently active. It's the node that was left-clicked and that started the dynamic edge
+        The node object that is currently active.
+        It's the node that was left-clicked and that started the dynamic edge
         """
 
     @property
     @abc.abstractmethod
     def edge_container(self) -> ObjectContainer:
-        """
-        The container that holds the dynamic edge lines
-        """
+        """The container that holds the dynamic edge lines"""
+
 
 class NetCanvas(abc.ABC, tk.Canvas):
     __slots__: t.Sequence[str] = ()
@@ -55,37 +53,25 @@ class NetCanvas(abc.ABC, tk.Canvas):
     @property
     @abc.abstractmethod
     def active_node(self) -> t.Optional[ActiveNode]:
-        """
-        The ActiveNode instance when a node was left-clicked. None if no dynamic edge exists
-        """
+        """The ActiveNode instance when a node was left-clicked. None if no dynamic edge exists"""
 
     @abc.abstractmethod
     def start_dynamic_line(self, node: CanvasNode) -> None:
-        """
-        Creates a dynamic edge and sets the active_node attribute
-        """
+        """Creates a dynamic edge and sets the active_node attribute"""
 
     @abc.abstractmethod
     def stop_dynamic_line(self) -> None:
-        """
-        Deletes the dynamic edge and sets the active_node attribute to None
-        """
-    
+        """Deletes the dynamic edge and sets the active_node attribute to None"""
+
     @abc.abstractmethod
     def create_aa_border_circle(self, pos: tuple[int, int], radius: int, width: int) -> CanvasObjectsLike:
-        """
-        Creates an anti-aliased circle with a border
-        """
+        """Creates an anti-aliased circle with a border"""
 
     @abc.abstractmethod
     def create_aa_double_circle(self, pos: tuple[int, int], space: int, radius: int) -> CanvasObjectsLike:
-        """
-        Creates an anti-aliased circle with two borders
-        """
+        """Creates an anti-aliased circle with two borders"""
 
     @functools.wraps(tk.Canvas.create_line)
     @abc.abstractmethod
     def create_aa_line(self, *args, **kwargs) -> CanvasObjectsLike:
-        """
-        Creates an anti-aliased line
-        """
+        """Creates an anti-aliased line"""

@@ -15,9 +15,24 @@
 #
 # You should have received a copy of the GNU Lesser General Public License
 # along with tk-netgraph. If not, see <https://www.gnu.org/licenses/>.
+import os
 
-from netgraph.api._canvas import *
-from netgraph.api._config import *
-from netgraph.api._edge import *
-from netgraph.api._node import *
-from netgraph.api._objects import *
+import nox
+
+SCRIPT_PATHS = [
+    os.path.join(".", "netgraph"),
+    "noxfile.py",
+]
+
+
+@nox.session()
+def format_fix(session: nox.Session) -> None:
+    session.install(".[dev.format]")
+    session.run("python", "-m", "ruff", "format", *SCRIPT_PATHS)
+    session.run("python", "-m", "ruff", "check", "--fix", *SCRIPT_PATHS)
+
+
+@nox.session()
+def slotscheck(session: nox.Session) -> None:
+    session.install(".[dev.slotscheck]")
+    session.run("python", "-m", "slotscheck", "-m", "netgraph")

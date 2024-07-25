@@ -20,8 +20,8 @@
 # Edges can be created by left-clicking on the respective nodes
 
 import customtkinter as ctk
-import netgraph
 
+import netgraph
 
 app = ctk.CTk()
 app.geometry("600x500")
@@ -29,9 +29,11 @@ canvas = netgraph.NetCanvas(app, highlightthickness=0)
 canvas.pack(side="top", fill="both", expand=True)
 net_manager = netgraph.NetManager(canvas)
 
+
 def spawn_nodes(event):
-    node = net_manager.create_node("MyNode") # "MyNode" is the label of the node
-    node.render((event.x, event.y)) # place the node at the mouse position
+    node = net_manager.create_node("MyNode")  # "MyNode" is the label of the node
+    node.render((event.x, event.y))  # place the node at the mouse position
+
 
 canvas.bind("<Button-3>", spawn_nodes)
 app.mainloop()

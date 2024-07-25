@@ -22,17 +22,17 @@ import tkinter as tk
 import typing as t
 
 from netgraph import NetConfig
-from netgraph.api import _node, _edge, _config
+from netgraph.api import _config, _edge, _node
 
 if t.TYPE_CHECKING:
-    from netgraph.api  import NetCanvas
+    from netgraph.api import NetCanvas
 
-__all__: t.Sequence[str] = (
-    "NetManager",
-)
+__all__: t.Sequence[str] = ("NetManager",)
+
 
 class _ComponentManager(dict[str, list[t.Union[_node.CanvasNode, _edge.CanvasEdge]]]):
-    __slots__: t.Sequence[str] = ("_component_id")
+    __slots__: t.Sequence[str] = "_component_id"
+
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
@@ -46,6 +46,7 @@ class _ComponentManager(dict[str, list[t.Union[_node.CanvasNode, _edge.CanvasEdg
 
         return tag
 
+
 class NetManager:
     __slots__: t.Sequence[str] = ("_canvas", "_config", "_component_manager", "_nodes")
 
@@ -53,7 +54,7 @@ class NetManager:
         self._canvas = canvas
 
         self._config = config if config is not None else NetConfig()
-        
+
         self._component_manager = _ComponentManager()
 
         self._canvas.bind("<MouseWheel>", self.zoom)
@@ -61,10 +62,10 @@ class NetManager:
     def zoom(self, event: tk.Event) -> None:
         if not self._config.enable_zoom:
             return
-        
-        if (event.delta > 0):
+
+        if event.delta > 0:
             self._canvas.scale(tk.ALL, event.x, event.y, 1.1, 1.1)
-        elif (event.delta < 0):
+        elif event.delta < 0:
             self._canvas.scale(tk.ALL, event.x, event.y, 0.9, 0.9)
 
     @property
@@ -78,25 +79,24 @@ class NetManager:
     def create_node(self, label: str, config: t.Optional[_config.NodeConfig] = None) -> _node.CanvasNode:
         if config is None:
             config = self._config.node_config
-            
+
         node = self._config.node_config.factory(
             self, self._canvas, label, config=config, obj_container=self._config.object_container
         )
         return node
-    
+
     def create_edge(
-        self, 
-        nodes: tuple[_node.CanvasNode, _node.CanvasNode], 
-        label: str, 
-        weight: t.Optional[int]=None,
-        config: t.Optional[_config.EdgeConfig] = None
+        self,
+        nodes: tuple[_node.CanvasNode, _node.CanvasNode],
+        label: str,
+        weight: t.Optional[int] = None,
+        config: t.Optional[_config.EdgeConfig] = None,
     ) -> _edge.CanvasEdge:
         if config is None:
             config = self._config.edge_config
-            
+
         edge = self._config.edge_config.factory(
-            self, self._canvas, nodes, label,
-            weight, config=config, obj_container=self._config.object_container
+            self, self._canvas, nodes, label, weight, config=config, obj_container=self._config.object_container
         )
 
         for node in nodes:
@@ -106,5 +106,3 @@ class NetManager:
         edge.position = sum(1 for e in existing_edges if e.endpoints == nodes)
 
         return edge
-        
-    
