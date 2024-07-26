@@ -40,7 +40,7 @@ def main() -> None:
         print(f"customtkinter {customtkinter.__version__}")
     except ModuleNotFoundError:
         print("customtkinter is not installed")
-    print(f"{py_impl}, {py_ver}, {py_compiler}")
+    print(f"{py_impl} {py_ver} {py_compiler}")
     print(f"{plat_info.system} {plat_info.version} {plat_info.machine}\n")
 
     print(f"NETGRAPH_USE_CTK={os.environ.get('NETGRAPH_USE_CTK', '')}")

@@ -30,6 +30,9 @@ dynamic = ["version"]
 Homepage = "https://github.com/YodaPY/tk-netgraph"
 Repository = "https://github.com/YodaPY/tk-netgraph"
 
+[project.scripts]
+netgraph = "netgraph._cli:main"
+
 [project.optional-dependencies]
 antialiasing = ["customtkinter>=5.2.2"]
 dev = ["nox>=2024.4.15"]
