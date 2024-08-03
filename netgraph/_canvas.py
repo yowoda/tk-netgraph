@@ -29,6 +29,7 @@ from netgraph._objects import _convert_to_canvas_objects, _ObjectContainer
 from netgraph._types import CanvasObjectsLike
 from netgraph.api import ActiveNode as AbstractActiveNode
 from netgraph.api import NetCanvas as AbstractNetCanvas
+from netgraph._vendor.ctk_canvas import CTkCanvas
 
 if t.TYPE_CHECKING:
     from netgraph._types import CanvasObjectsLike
@@ -36,30 +37,13 @@ if t.TYPE_CHECKING:
 
 __all__: t.Sequence[str] = ("NetCanvas",)
 
-USE_CTK_IF_AVAILABLE: t.Final[bool] = os.environ.get("NETGRAPH_USE_CTK", "true") != "false"
-has_antialiasing = False
-
-AA_UNAVAILABLE_ERROR: t.Final[str] = (
-    "Anti-aliased circles are not available as customtkinter is either not installed "
-    "or the NETGRAPH_USE_CTK environment variable is set to false"
-)
-
-if USE_CTK_IF_AVAILABLE:
-    try:
-        import customtkinter as ctk
-
-        has_antialiasing = True
-    except ModuleNotFoundError:
-        pass
-
-
 @attrs.define(slots=True, frozen=True)
 class _ActiveNode(AbstractActiveNode):
     node: CanvasNode
     edge_container: _ObjectContainer
 
 
-class _PartialCanvas(AbstractNetCanvas, tk.Canvas):
+class NetCanvas(AbstractNetCanvas, CTkCanvas):
     __slots__: t.Sequence[str] = ("_active_node",)
 
     def __init__(self, *args, **kwargs) -> None:  # type: ignore
@@ -119,26 +103,10 @@ class _PartialCanvas(AbstractNetCanvas, tk.Canvas):
         kwargs["width"] += 0.5
         yield from self.create_line(*args, **kwargs)
 
-    def create_aa_border_circle(self, *args, **kwargs) -> t.NoReturn:
-        raise NotImplementedError(AA_UNAVAILABLE_ERROR)
+    def create_aa_border_circle(self, pos: tuple[int, int], radius: int, width: int) -> CanvasObjectsLike:
+        yield self.create_aa_circle(*pos, radius, fill="black")
+        yield self.create_aa_circle(*pos, radius - width, fill=self.cget("bg"))
 
-    def create_aa_double_circle(self, *args, **kwargs) -> t.NoReturn:
-        raise NotImplementedError(AA_UNAVAILABLE_ERROR)
-
-    def create_aa_circle(self, *args, **kwargs) -> t.NoReturn:
-        raise NotImplementedError(AA_UNAVAILABLE_ERROR)
-
-
-if has_antialiasing:
-
-    class NetCanvas(ctk.CTkCanvas, _PartialCanvas):  # we want to specify CTkCanvas first so the mro is set correctly
-        def create_aa_border_circle(self, pos: tuple[int, int], radius: int, width: int) -> CanvasObjectsLike:
-            yield self.create_aa_circle(*pos, radius, fill="black")
-            yield self.create_aa_circle(*pos, radius - width, fill=self.cget("bg"))
-
-        def create_aa_double_circle(self, pos: tuple[int, int], space: int, radius: int) -> CanvasObjectsLike:
-            yield from self.create_aa_border_circle(pos, radius, 2)
-            yield from self.create_aa_border_circle(pos, radius - space, 2)
-
-else:
-    NetCanvas = _PartialCanvas
+    def create_aa_double_circle(self, pos: tuple[int, int], space: int, radius: int) -> CanvasObjectsLike:
+        yield from self.create_aa_border_circle(pos, radius, 2)
+        yield from self.create_aa_border_circle(pos, radius - space, 2)
