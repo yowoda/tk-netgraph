@@ -43,7 +43,7 @@ class _ActiveNode(AbstractActiveNode):
     edge_container: _ObjectContainer
 
 
-class NetCanvas(AbstractNetCanvas, CTkCanvas):
+class NetCanvas(CTkCanvas, AbstractNetCanvas): # inherit from CTKCanvas first so mro is set correctly
     __slots__: t.Sequence[str] = ("_active_node",)
 
     def __init__(self, *args, **kwargs) -> None:  # type: ignore

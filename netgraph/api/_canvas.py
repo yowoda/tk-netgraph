@@ -23,6 +23,8 @@ import functools
 import tkinter as tk
 import typing as t
 
+from netgraph._vendor.ctk_canvas import CTkCanvas
+
 if t.TYPE_CHECKING:
     from netgraph._types import CanvasObjectsLike
     from netgraph.api import CanvasNode, ObjectContainer
@@ -70,6 +72,11 @@ class NetCanvas(abc.ABC, tk.Canvas):
     @abc.abstractmethod
     def create_aa_double_circle(self, pos: tuple[int, int], space: int, radius: int) -> CanvasObjectsLike:
         """Creates an anti-aliased circle with two borders"""
+
+    @functools.wraps(CTkCanvas.create_aa_circle)
+    @abc.abstractmethod
+    def create_aa_circle(self, *args, **kwargs) -> CanvasObjectsLike:
+        """Creates an anti-aliased circle"""
 
     @functools.wraps(tk.Canvas.create_line)
     @abc.abstractmethod
