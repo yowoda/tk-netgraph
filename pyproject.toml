@@ -23,7 +23,7 @@ classifiers = [
     "Topic :: Software Development :: User Interfaces",
     "Typing :: Typed",
 ]
-dependencies = ["attrs>=23.2.0"]
+dependencies = ["typing_extensions>=4.12.2, <5"]
 dynamic = ["version"]
 
 [project.urls]
@@ -34,10 +34,9 @@ Repository = "https://github.com/YodaPY/tk-netgraph"
 netgraph = "netgraph._cli:main"
 
 [project.optional-dependencies]
-antialiasing = ["customtkinter>=5.2.2"]
 dev = ["nox>=2024.4.15"]
-"dev.slotscheck" = ["slotscheck>=0.19.0"]
-"dev.format" = ["ruff>=0.5.5"]
+"dev.slotscheck" = ["slotscheck>=0.19.0, <1"]
+"dev.format" = ["ruff>=0.5.5, <1"]
 
 [tool.ruff]
 line-length = 120
@@ -79,9 +78,9 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-# F401 (Unused import) - init files don't use their imports
-# F403 (Star import used) - hopefully we're sensible enough to know what objects modules contain
-# F405 (Import via star) - everything is imported to top-level
+# F401 (Unused import)
+# F403 (Star import used)
+# F405 (Import via star)
 "__init__.py" = ["F401", "F403", "F405"]
 
 [tool.slotscheck]
@@ -90,7 +89,7 @@ require-superclass = true
 require-subclass = true
 exclude-classes = """
 (
-    ^netgraph._canvas:_PartialCanvas$ |
+    ^netgraph._canvas:NetCanvas$ |
     ^netgraph.api._canvas:NetCanvas$
 )
 """

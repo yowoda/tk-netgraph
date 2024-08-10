@@ -27,9 +27,8 @@ from netgraph.api import _objects
 if t.TYPE_CHECKING:
     import tkinter as tk
 
-    from netgraph import EdgeTextConfig, NetCanvas
+    from netgraph.api import EdgeTextConfig, NetCanvas, CanvasEdge
     from netgraph._types import CanvasObjectsLike
-    from netgraph.api._edge import CanvasEdge
 
 __all__: t.Sequence[str] = ("CanvasObject", "CanvasEdgeTextObject")
 
@@ -66,7 +65,7 @@ class CanvasEdgeTextObject(CanvasObject):
         if self._edge.is_selfloop:
             node = self._edge.endpoints[0]
             box = self._canvas.bbox(node.canvas_id)
-            offset = abs(self._edge._config.offset) / 2 * self._edge._position
+            offset = abs(self._edge.config.offset) / 2 * self._edge.position
             x, y = _math._calc_selfloop_text_pos(box, offset)
             y -= self._config.gap
 
@@ -139,7 +138,7 @@ class _ObjectContainer(_objects.ObjectContainer):
     def remove_tag(self, tag: str) -> None:
         self._tags.remove(tag)
         for object in self._get_object_ids():
-            self._canvas.dtag(tag, object)
+            self._canvas.dtag(object, tag)
 
     def remove(self, *objects: _objects.CanvasObject) -> None:
         for obj in objects:

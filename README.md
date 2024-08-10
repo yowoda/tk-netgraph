@@ -11,11 +11,12 @@ The following features are supported right now:
 - Dragging of graph components or the whole graph
 - Dynamic edge creation by clicking on nodes
 - Cheap antialiased circles/lines (wip)
-- Appearance configuration
+- Reactive appearance configuration
 
 Missing:
 - support for directed edges
 - API is missing some abstract components
+- support for draggable edge line points
 
 # Examples:
 Examples can be found in the [examples folder](examples/)

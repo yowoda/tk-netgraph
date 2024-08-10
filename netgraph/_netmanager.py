@@ -21,11 +21,11 @@ from __future__ import annotations
 import tkinter as tk
 import typing as t
 
-from netgraph import NetConfig
+from netgraph import NetConfig as NetConfigImpl
 from netgraph.api import _config, _edge, _node
 
 if t.TYPE_CHECKING:
-    from netgraph.api import NetCanvas
+    from netgraph.api import NetCanvas, NetConfig
 
 __all__: t.Sequence[str] = ("NetManager",)
 
@@ -48,25 +48,40 @@ class _ComponentManager(dict[str, list[t.Union[_node.CanvasNode, _edge.CanvasEdg
 
 
 class NetManager:
-    __slots__: t.Sequence[str] = ("_canvas", "_config", "_component_manager", "_nodes")
+    __slots__: t.Sequence[str] = ("_canvas", "_config", "_component_manager", "_nodes", "_zoom_in_count", "_zoom_out_count", "_zoom_bind_id")
 
     def __init__(self, canvas: NetCanvas, config: t.Optional[_config.NetConfig] = None) -> None:
         self._canvas = canvas
 
-        self._config = config if config is not None else NetConfig()
+        self._config = config if config is not None else NetConfigImpl()
 
         self._component_manager = _ComponentManager()
 
-        self._canvas.bind("<MouseWheel>", self.zoom)
+        self._configure_zoom(self._config.enable_zoom, has_binding=False)
+        NetConfigImpl.enable_zoom.add_observer(self._config, self._configure_zoom)
+
+        self._zoom_in_count = 0
+        self._zoom_out_count = 0
+        self._zoom_bind_id: t.Optional[str] = None
+
+    def _configure_zoom(self, enable_zoom: bool, has_binding: bool=True) ->  None:
+        if enable_zoom is True:
+            self._zoom_bind_id = self._canvas.bind("<MouseWheel>", self.zoom)
+
+        elif has_binding is True and self._zoom_bind_id is not None:
+            self._canvas.unbind("<MouseWheel>", self._zoom_bind_id)
+            self._zoom_bind_id = None
 
     def zoom(self, event: tk.Event) -> None:
-        if not self._config.enable_zoom:
-            return
-
-        if event.delta > 0:
+        if event.delta > 0 and self._zoom_in_count < self._config.zoom_in_limit:
             self._canvas.scale(tk.ALL, event.x, event.y, 1.1, 1.1)
-        elif event.delta < 0:
+            self._zoom_in_count += 1
+            self._zoom_out_count -= 1
+
+        elif event.delta < 0 and self._zoom_out_count < self._config.zoom_out_limit:
             self._canvas.scale(tk.ALL, event.x, event.y, 0.9, 0.9)
+            self._zoom_out_count += 1
+            self._zoom_in_count -= 1
 
     @property
     def component_manager(self) -> _ComponentManager:

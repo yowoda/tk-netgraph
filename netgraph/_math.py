@@ -72,12 +72,12 @@ def _calc_curved_center(
     return (xa, ya)
 
 
-def _calc_selfloop_points(bbox: tuple[int, int, int, int], offset: float) -> tuple[int, ...]:
+def _calc_selfloop_points(bbox: tuple[int, int, int, int], offset: float) -> tuple[float, ...]:
     center_x = (bbox[0] + bbox[2]) / 2
     center_y = (bbox[1] + bbox[3]) / 2
     height = bbox[3] - bbox[1]
     # the self-loop edge line contains the following points
-    x_offset = 30
+    x_offset = 10
     return (
         center_x - x_offset,
         center_y,
@@ -92,7 +92,7 @@ def _calc_selfloop_points(bbox: tuple[int, int, int, int], offset: float) -> tup
     )
 
 
-def _calc_selfloop_text_pos(bbox: tuple[int, int, int, int], offset: float) -> tuple[int, int]:
+def _calc_selfloop_text_pos(bbox: tuple[int, int, int, int], offset: float) -> tuple[float, float]:
     height = bbox[3] - bbox[1]
     center_x = (bbox[0] + bbox[2]) / 2
     center_y = (bbox[1] + bbox[3]) / 2

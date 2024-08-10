@@ -80,6 +80,7 @@ class CanvasEdge(_edge.CanvasEdge):
         # Both nodes are part of different graph components
         # Choose one component and add the nodes and edges of the other component to the new one
         if (new_id := _node_comp_ids[0]) != (old_id := _node_comp_ids[1]) and all(_node_comp_ids):
+            old_id = t.cast(str, old_id)
             objs = self._manager.component_manager[old_id]
             for obj in objs:
                 obj.obj_container.remove_tag(old_id)
@@ -105,6 +106,8 @@ class CanvasEdge(_edge.CanvasEdge):
         else:
             new_id = self._manager.component_manager.add_component()
             _new_objects.extend(self._nodes)
+
+        new_id = t.cast(str, new_id)
 
         # Add all new objects to the component, the edge as well
         for object in _new_objects:

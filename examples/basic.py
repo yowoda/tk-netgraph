@@ -19,11 +19,11 @@
 # Nodes can be created by right-clicking anywhere
 # Edges can be created by left-clicking on the respective nodes
 
-import customtkinter as ctk
+import tkinter as tk
 
 import netgraph
 
-app = ctk.CTk()
+app = tk.Tk()
 app.geometry("600x500")
 canvas = netgraph.NetCanvas(app, highlightthickness=0)
 canvas.pack(side="top", fill="both", expand=True)

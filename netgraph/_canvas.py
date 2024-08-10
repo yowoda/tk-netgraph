@@ -33,14 +33,14 @@ from netgraph._vendor.ctk_canvas import CTkCanvas
 
 if t.TYPE_CHECKING:
     from netgraph._types import CanvasObjectsLike
-    from netgraph.api._node import CanvasNode
+    from netgraph.api import CanvasNode, ObjectContainer
 
 __all__: t.Sequence[str] = ("NetCanvas",)
 
 @attrs.define(slots=True, frozen=True)
 class _ActiveNode(AbstractActiveNode):
     node: CanvasNode
-    edge_container: _ObjectContainer
+    edge_container: ObjectContainer
 
 
 class NetCanvas(CTkCanvas, AbstractNetCanvas): # inherit from CTKCanvas first so mro is set correctly

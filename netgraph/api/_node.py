@@ -56,6 +56,11 @@ class CanvasNode(abc.ABC, CanvasAware):
     def component_id(self) -> t.Optional[str]:
         """The tag of the component that the node is apart of"""
 
+    @component_id.setter
+    @abc.abstractmethod
+    def component_id(self, value: t.Optional[str]) -> None:
+        """Sets the new component id of the node"""
+
     @property
     @abc.abstractmethod
     def label(self) -> str:

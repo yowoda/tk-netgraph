@@ -68,6 +68,11 @@ class CanvasEdge(abc.ABC, CanvasAware):
     def component_id(self) -> t.Optional[str]:
         """The tag of the component that the edge is apart of"""
 
+    @component_id.setter
+    @abc.abstractmethod
+    def component_id(self, value: t.Optional[str]) -> None:
+        """Sets the new component id of the edge"""
+
     @property
     @abc.abstractmethod
     def endpoints(self) -> tuple[CanvasNode, CanvasNode]:
@@ -98,7 +103,14 @@ class CanvasEdge(abc.ABC, CanvasAware):
     def position(self) -> int:
         """
         The position of the edge in the set of edges between the two endpoints.
-        The position will be calculated the `create_edge` method is called.
+        The position will be calculated when the `create_edge` method is called.
+        """
+
+    @position.setter
+    @abc.abstractmethod
+    def position(self, value: int) -> None:
+        """
+        Set the position of the edge to `value`
         """
 
     @property

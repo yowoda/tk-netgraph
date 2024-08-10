@@ -22,7 +22,7 @@ import abc
 import typing as t
 
 if t.TYPE_CHECKING:
-    from netgraph.api import CanvasEdge, CanvasNode, DragMode
+    from netgraph.api import CanvasEdge, CanvasNode, DragMode, ObjectContainer
 
 __all__: t.Sequence[str] = ("EdgeTextConfig", "EdgeConfig", "NodeConfig", "NetConfig")
 
@@ -137,6 +137,16 @@ class NetConfig(abc.ABC):
 
     @property
     @abc.abstractmethod
+    def zoom_in_limit(self) -> int:
+        """The maximum number of times you can zoom in (inclusive). Does not change anything if `enable_zoom` is set to False"""
+
+    @property
+    @abc.abstractmethod
+    def zoom_out_limit(self) -> int:
+        """The maximum number of times you can zoom out (inclusive). Does not change anything if `enable_zoom` is set to False"""
+
+    @property
+    @abc.abstractmethod
     def edge_config(self) -> EdgeConfig:
         """The edge configuration that will be applied to all created edges unless overriden"""
 
@@ -144,3 +154,8 @@ class NetConfig(abc.ABC):
     @abc.abstractmethod
     def node_config(self) -> NodeConfig:
         """The node configuration that will be applied to all created node unless overriden"""
+
+    @property
+    @abc.abstractmethod
+    def object_container(self) -> type[ObjectContainer]:
+        """The object container class to use for nodes and edges"""

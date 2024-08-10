@@ -100,7 +100,7 @@ class CanvasNode(_node.CanvasNode):
         return self._config
 
     @property
-    def edges(self) -> list[CanvasEdge]:
+    def edges(self) -> set[CanvasEdge]:
         return self._edges
 
     def get_center(self) -> tuple[float, float]:

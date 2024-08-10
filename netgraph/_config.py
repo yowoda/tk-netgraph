@@ -16,30 +16,136 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with tk-netgraph. If not, see <https://www.gnu.org/licenses/>.
 
+# pyright: reportIncompatibleMethodOverride=false
+
 from __future__ import annotations
 
+import inspect
 import typing as t
+from dataclasses import dataclass
 
-import attrs
+from typing_extensions import Self, dataclass_transform
 
 from netgraph._edge import CanvasEdge as CanvasEdgeImpl
 from netgraph._node import CanvasNode as CanvasNodeImpl
 from netgraph._objects import _ObjectContainer as ObjectContainerImpl
-from netgraph.api import _config, _edge
+from netgraph.api import _config, _edge, ObjectContainer
 
 if t.TYPE_CHECKING:
-    from netgraph.api import CanvasEdge, CanvasNode, ObjectContainer
+    from netgraph.api import CanvasEdge, CanvasNode
 
 __all__: t.Sequence[str] = ("NetConfig", "EdgeConfig", "NodeConfig", "EdgeTextConfig")
 
+C = t.TypeVar("C")
+T = t.TypeVar("T")
 
-@attrs.define(slots=True)
+class ReactiveField(t.Generic[C, T]):
+    __slots__: t.Sequence[str] = ("_value", "_observers")
+
+    def __init__(self, value: T) -> None:
+        self._value = value
+        self._observers: list[t.Callable[[T], None]] = []
+
+    @property
+    def value(self) -> T:
+        return self._value
+    
+    @value.setter
+    def value(self, new_value: T) -> None:
+        self._value = new_value
+    
+    @property
+    def observers(self) -> list[t.Callable[[T], None]]:
+        return self._observers
+    
+    @t.overload
+    def __get__(self, instance: None, owner: type[C]) -> Self:
+        ...
+
+    @t.overload
+    def __get__(self, instance: C, owner: type[C]) -> T:
+        ...
+
+    @t.no_type_check
+    def __get__(self, instance, owner):
+        ...
+
+    def __set__(self, instance: C, value: T) -> None:
+        ...
+    
+    def add_observer(self, instance: C, callback: t.Callable[[T], None]) -> None:
+        ...
+
+class _ReactiveWrapper:
+    __slots__: t.Sequence[str] = ("_name", "_default")
+
+    def __init__(self, name: str, default: t.Any) -> None:
+        self._name = name
+        self._default = default
+
+    @t.no_type_check
+    def __get__(self, instance, owner):
+        if instance is None:
+            return self
+        
+        return getattr(instance, self._name).value
+    
+    @t.no_type_check
+    def __set__(self, instance, value):
+        field = getattr(instance, self._name, None)
+        if field is None:
+            self._default = value
+            return
+        
+        field.value = value
+        for observer in field.observers:
+            observer(value)
+
+    @t.no_type_check
+    def add_observer(self, instance, callback) -> None:
+        getattr(instance, self._name).observers.append(callback)
+
+_ClassT = t.TypeVar("_ClassT")
+_ValueT = t.TypeVar("_ValueT")
+
+def field(value: _ValueT) -> ReactiveField[t.Any, _ValueT]:
+    return value  # pyright: ignore[reportReturnType]
+
+@dataclass_transform(field_specifiers=(field,))
+def reactive(cls: type[_ClassT]) -> type[_ClassT]:
+    field_names: list[str] = []
+
+    # Filter out the fields that are marked as reactive by their annotation
+    annotations = t.get_type_hints(cls)
+    for name, annotation in annotations.items():
+        if getattr(annotation, "__origin__", None) is ReactiveField:
+            field_names.append(name)
+
+    # __post_init__ after dataclass initialization to set up reactive fields that are stored as private names
+
+    @t.no_type_check
+    def __post_init__(self) -> None:
+        for name in field_names:
+            attr = inspect.getattr_static(self, name)
+            if not isinstance(attr, _ReactiveWrapper):
+                setattr(self.__class__, name, _ReactiveWrapper(f"_{name}", attr))
+            
+            else:
+                attr = attr._default
+            
+            reactive_field = ReactiveField(attr)
+            setattr(self, f"_{name}", reactive_field)
+
+    setattr(cls, "__post_init__", __post_init__)
+    return cls
+
+@dataclass
 class EdgeTextConfig(_config.EdgeTextConfig):
     gap: int = 0
     color: str = "black"
 
 
-@attrs.define(slots=True)
+@dataclass
 class EdgeConfig(_config.EdgeConfig):
     factory: type[CanvasEdge] = CanvasEdgeImpl
     antialiased: bool = False
@@ -52,7 +158,7 @@ class EdgeConfig(_config.EdgeConfig):
     line_segments: int = 30
 
 
-@attrs.define(slots=True)
+@dataclass
 class NodeConfig(_config.NodeConfig):
     factory: type[CanvasNode] = CanvasNodeImpl
     antialiased: bool = False
@@ -60,9 +166,12 @@ class NodeConfig(_config.NodeConfig):
     label_color: str = "black"
 
 
-@attrs.define(slots=True)
+@dataclass
+@reactive
 class NetConfig(_config.NetConfig):
-    enable_zoom: bool = True
+    enable_zoom: ReactiveField[Self, bool] = field(True)
+    zoom_in_limit: int = 10
+    zoom_out_limit: int = 10
     edge_config: _config.EdgeConfig = EdgeConfig()
     node_config: _config.NodeConfig = NodeConfig()
-    object_container: ObjectContainer = ObjectContainerImpl
+    object_container: type[ObjectContainer] = ObjectContainerImpl

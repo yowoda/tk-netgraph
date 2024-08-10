@@ -73,6 +73,10 @@ class ObjectContainer(abc.ABC, CanvasAware, Draggable):
         """Removes the canvas object with the given ID from the container"""
 
     @abc.abstractmethod
+    def remove_all(self) -> None:
+        """Removes all objects from the container"""
+
+    @abc.abstractmethod
     def coords(self, *positions: float) -> None:
         """Change the coordinates of all objects in the container"""
 
