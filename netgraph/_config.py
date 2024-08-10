@@ -29,7 +29,7 @@ from typing_extensions import Self, dataclass_transform
 from netgraph._edge import CanvasEdge as CanvasEdgeImpl
 from netgraph._node import CanvasNode as CanvasNodeImpl
 from netgraph._objects import _ObjectContainer as ObjectContainerImpl
-from netgraph.api import _config, _edge, ObjectContainer
+from netgraph.api import _edge, ObjectContainer
 
 if t.TYPE_CHECKING:
     from netgraph.api import CanvasEdge, CanvasNode
@@ -140,17 +140,17 @@ def reactive(cls: type[_ClassT]) -> type[_ClassT]:
     return cls
 
 @dataclass
-class EdgeTextConfig(_config.EdgeTextConfig):
+class EdgeTextConfig:
     gap: int = 0
     color: str = "black"
 
 
 @dataclass
-class EdgeConfig(_config.EdgeConfig):
+class EdgeConfig:
     factory: type[CanvasEdge] = CanvasEdgeImpl
     antialiased: bool = False
-    label_config: _config.EdgeTextConfig = EdgeTextConfig(gap=20)
-    weight_config: _config.EdgeTextConfig = EdgeTextConfig(gap=-20)
+    label_config: EdgeTextConfig = EdgeTextConfig(gap=20)
+    weight_config: EdgeTextConfig = EdgeTextConfig(gap=-20)
     line_color: str = "black"
     line_width: float = 1.5
     drag_mode: _edge.DragMode = _edge.DragMode.COMPONENT_ONLY
@@ -159,7 +159,7 @@ class EdgeConfig(_config.EdgeConfig):
 
 
 @dataclass
-class NodeConfig(_config.NodeConfig):
+class NodeConfig:
     factory: type[CanvasNode] = CanvasNodeImpl
     antialiased: bool = False
     enable_dragging: bool = True
@@ -168,10 +168,10 @@ class NodeConfig(_config.NodeConfig):
 
 @dataclass
 @reactive
-class NetConfig(_config.NetConfig):
+class NetConfig:
     enable_zoom: ReactiveField[Self, bool] = field(True)
     zoom_in_limit: int = 10
     zoom_out_limit: int = 10
-    edge_config: _config.EdgeConfig = EdgeConfig()
-    node_config: _config.NodeConfig = NodeConfig()
+    edge_config: EdgeConfig = EdgeConfig()
+    node_config: NodeConfig = NodeConfig()
     object_container: type[ObjectContainer] = ObjectContainerImpl

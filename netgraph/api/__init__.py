@@ -17,7 +17,6 @@
 # along with tk-netgraph. If not, see <https://www.gnu.org/licenses/>.
 
 from netgraph.api._canvas import *
-from netgraph.api._config import *
 from netgraph.api._edge import *
 from netgraph.api._node import *
 from netgraph.api._objects import *

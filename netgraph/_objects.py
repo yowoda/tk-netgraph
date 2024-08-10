@@ -21,13 +21,13 @@ from __future__ import annotations
 import itertools
 import typing as t
 
-from netgraph import _math
+from netgraph import _math, EdgeTextConfig
 from netgraph.api import _objects
 
 if t.TYPE_CHECKING:
     import tkinter as tk
 
-    from netgraph.api import EdgeTextConfig, NetCanvas, CanvasEdge
+    from netgraph.api import NetCanvas, CanvasEdge
     from netgraph._types import CanvasObjectsLike
 
 __all__: t.Sequence[str] = ("CanvasObject", "CanvasEdgeTextObject")

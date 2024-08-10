@@ -21,14 +21,14 @@ from __future__ import annotations
 import tkinter as tk
 import typing as t
 
-from netgraph import _math
+from netgraph import _math, EdgeConfig, EdgeTextConfig
 from netgraph._objects import CanvasEdgeTextObject, _convert_to_canvas_objects, _ObjectContainer
 from netgraph.api import _edge
 
 if t.TYPE_CHECKING:
     from netgraph import NetManager
     from netgraph._types import CanvasObjectsLike
-    from netgraph.api import CanvasNode, EdgeTextConfig, NetCanvas, _config, _objects
+    from netgraph.api import CanvasNode,  NetCanvas, _objects
 
 __all__: t.Sequence[str] = ("CanvasEdge",)
 
@@ -55,7 +55,7 @@ class CanvasEdge(_edge.CanvasEdge):
         label: str,
         weight: t.Optional[int] = None,
         *,
-        config: _config.EdgeConfig,
+        config: EdgeConfig,
         obj_container: type[_objects.ObjectContainer] = _ObjectContainer,
     ) -> None:
         self._manager = manager
@@ -168,7 +168,7 @@ class CanvasEdge(_edge.CanvasEdge):
         return self._obj_container
 
     @property
-    def config(self) -> _config.EdgeConfig:
+    def config(self) -> EdgeConfig:
         return self._config
 
     @property

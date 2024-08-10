@@ -22,13 +22,14 @@ import typing as t
 
 from netgraph._objects import _convert_to_canvas_objects, _ObjectContainer
 from netgraph.api import _node
+from netgraph import NodeConfig
 
 if t.TYPE_CHECKING:
     import tkinter as tk
 
     from netgraph import NetManager
     from netgraph._types import CanvasObjectsLike
-    from netgraph.api import CanvasEdge, NetCanvas, NodeConfig, ObjectContainer
+    from netgraph.api import CanvasEdge, NetCanvas, ObjectContainer
 
 __all__: t.Sequence[str] = ("CanvasNode",)
 

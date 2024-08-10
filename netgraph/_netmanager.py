@@ -21,11 +21,11 @@ from __future__ import annotations
 import tkinter as tk
 import typing as t
 
-from netgraph import NetConfig as NetConfigImpl
-from netgraph.api import _config, _edge, _node
+from netgraph import NetConfig, NodeConfig, EdgeConfig
+from netgraph.api import _edge, _node
 
 if t.TYPE_CHECKING:
-    from netgraph.api import NetCanvas, NetConfig
+    from netgraph.api import NetCanvas
 
 __all__: t.Sequence[str] = ("NetManager",)
 
@@ -50,15 +50,15 @@ class _ComponentManager(dict[str, list[t.Union[_node.CanvasNode, _edge.CanvasEdg
 class NetManager:
     __slots__: t.Sequence[str] = ("_canvas", "_config", "_component_manager", "_nodes", "_zoom_in_count", "_zoom_out_count", "_zoom_bind_id")
 
-    def __init__(self, canvas: NetCanvas, config: t.Optional[_config.NetConfig] = None) -> None:
+    def __init__(self, canvas: NetCanvas, config: t.Optional[NetConfig] = None) -> None:
         self._canvas = canvas
 
-        self._config = config if config is not None else NetConfigImpl()
+        self._config = config if config is not None else NetConfig()
 
         self._component_manager = _ComponentManager()
 
         self._configure_zoom(self._config.enable_zoom, has_binding=False)
-        NetConfigImpl.enable_zoom.add_observer(self._config, self._configure_zoom)
+        self._config.__class__.enable_zoom.add_observer(self._config, self._configure_zoom)
 
         self._zoom_in_count = 0
         self._zoom_out_count = 0
@@ -91,7 +91,7 @@ class NetManager:
     def config(self) -> NetConfig:
         return self._config
 
-    def create_node(self, label: str, config: t.Optional[_config.NodeConfig] = None) -> _node.CanvasNode:
+    def create_node(self, label: str, config: t.Optional[NodeConfig] = None) -> _node.CanvasNode:
         if config is None:
             config = self._config.node_config
 
@@ -105,7 +105,7 @@ class NetManager:
         nodes: tuple[_node.CanvasNode, _node.CanvasNode],
         label: str,
         weight: t.Optional[int] = None,
-        config: t.Optional[_config.EdgeConfig] = None,
+        config: t.Optional[EdgeConfig] = None,
     ) -> _edge.CanvasEdge:
         if config is None:
             config = self._config.edge_config
