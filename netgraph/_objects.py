@@ -21,12 +21,13 @@ from __future__ import annotations
 import itertools
 import typing as t
 
-from netgraph import _math, EdgeTextConfig
+from netgraph import _math
 from netgraph.api import _objects
 
 if t.TYPE_CHECKING:
     import tkinter as tk
 
+    from netgraph._config import EdgeTextConfig
     from netgraph.api import NetCanvas, CanvasEdge
     from netgraph._types import CanvasObjectsLike
 

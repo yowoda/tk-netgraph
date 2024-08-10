@@ -19,13 +19,12 @@
 from __future__ import annotations
 
 import functools
-import os
 import tkinter as tk
 import typing as t
 
 import attrs
 
-from netgraph._objects import _convert_to_canvas_objects, _ObjectContainer
+from netgraph._objects import _convert_to_canvas_objects
 from netgraph._types import CanvasObjectsLike
 from netgraph.api import ActiveNode as AbstractActiveNode
 from netgraph.api import NetCanvas as AbstractNetCanvas

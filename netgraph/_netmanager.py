@@ -57,14 +57,14 @@ class NetManager:
 
         self._component_manager = _ComponentManager()
 
-        self._configure_zoom(self._config.enable_zoom, has_binding=False)
-        self._config.__class__.enable_zoom.add_observer(self._config, self._configure_zoom)
-
         self._zoom_in_count = 0
         self._zoom_out_count = 0
         self._zoom_bind_id: t.Optional[str] = None
 
-    def _configure_zoom(self, enable_zoom: bool, has_binding: bool=True) ->  None:
+        self._configure_zoom(self._config.enable_zoom, has_binding=False)
+        self._config.__class__.enable_zoom.add_observer(self._config, self._configure_zoom)
+
+    def _configure_zoom(self, enable_zoom: bool, has_binding: bool=True) -> None:
         if enable_zoom is True:
             self._zoom_bind_id = self._canvas.bind("<MouseWheel>", self.zoom)
 

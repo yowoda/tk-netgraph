@@ -23,7 +23,7 @@ classifiers = [
     "Topic :: Software Development :: User Interfaces",
     "Typing :: Typed",
 ]
-dependencies = ["typing_extensions>=4.12.2, <5"]
+dependencies = ["typing_extensions>=4.12.2, <5", "attrs>=24.2.0, <25"]
 dynamic = ["version"]
 
 [project.urls]

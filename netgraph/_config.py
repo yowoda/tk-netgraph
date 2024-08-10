@@ -22,8 +22,8 @@ from __future__ import annotations
 
 import inspect
 import typing as t
-from dataclasses import dataclass
 
+import attrs
 from typing_extensions import Self, dataclass_transform
 
 from netgraph._edge import CanvasEdge as CanvasEdgeImpl
@@ -136,16 +136,16 @@ def reactive(cls: type[_ClassT]) -> type[_ClassT]:
             reactive_field = ReactiveField(attr)
             setattr(self, f"_{name}", reactive_field)
 
-    setattr(cls, "__post_init__", __post_init__)
+    setattr(cls, "__attrs_post_init__", __post_init__)
     return cls
 
-@dataclass
+@attrs.define(slots=False)
 class EdgeTextConfig:
     gap: int = 0
     color: str = "black"
 
 
-@dataclass
+@attrs.define(slots=False)
 class EdgeConfig:
     factory: type[CanvasEdge] = CanvasEdgeImpl
     antialiased: bool = False
@@ -158,7 +158,7 @@ class EdgeConfig:
     line_segments: int = 30
 
 
-@dataclass
+@attrs.define(slots=False)
 class NodeConfig:
     factory: type[CanvasNode] = CanvasNodeImpl
     antialiased: bool = False
@@ -166,7 +166,7 @@ class NodeConfig:
     label_color: str = "black"
 
 
-@dataclass
+@attrs.define(slots=False)
 @reactive
 class NetConfig:
     enable_zoom: ReactiveField[Self, bool] = field(True)
