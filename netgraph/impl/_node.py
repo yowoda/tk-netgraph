@@ -20,7 +20,7 @@ from __future__ import annotations
 
 import typing as t
 
-from netgraph._objects import _convert_to_canvas_objects, _ObjectContainer
+from netgraph.impl._objects import _convert_to_canvas_objects, _ObjectContainer
 from netgraph.api import _node
 
 if t.TYPE_CHECKING:
@@ -28,8 +28,7 @@ if t.TYPE_CHECKING:
 
     from netgraph import NetManager
     from netgraph._types import CanvasObjectsLike
-    from netgraph.api import CanvasEdge, NetCanvas, ObjectContainer
-    from netgraph._config import NodeConfig
+    from netgraph.api import CanvasEdge, NetCanvas, ObjectContainer, NodeConfig
 
 __all__: t.Sequence[str] = ("CanvasNode",)
 

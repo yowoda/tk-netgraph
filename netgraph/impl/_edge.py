@@ -22,14 +22,13 @@ import tkinter as tk
 import typing as t
 
 from netgraph import _math
-from netgraph._objects import CanvasEdgeTextObject, _convert_to_canvas_objects, _ObjectContainer
+from netgraph.impl._objects import CanvasEdgeTextObject, _convert_to_canvas_objects, _ObjectContainer
 from netgraph.api import _edge
 
 if t.TYPE_CHECKING:
     from netgraph import NetManager
     from netgraph._types import CanvasObjectsLike
-    from netgraph._config import EdgeConfig, EdgeTextConfig
-    from netgraph.api import CanvasNode,  NetCanvas, _objects
+    from netgraph.api import CanvasNode,  NetCanvas, _objects, EdgeTextConfig,  EdgeConfig
 
 __all__: t.Sequence[str] = ("CanvasEdge",)
 
@@ -233,6 +232,9 @@ class CanvasEdge(_edge.CanvasEdge):
             "width": self._config.line_width,
             "smooth": True,
             "splinesteps": self._config.line_segments,
+            "arrow": tk.LAST,
+            #"arrowshape": (60, 80, 20)
+            "arrowshape": (70, 70, 10)
         }
 
         create_line = self._canvas.create_aa_line if self._config.antialiased else self._canvas.create_line

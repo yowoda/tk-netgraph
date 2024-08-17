@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with tk-netgraph. If not, see <https://www.gnu.org/licenses/>.
 
-# pyright: reportIncompatibleMethodOverride=false
+# pyright: reportCallIssue=false, reportArgumentType=false
 
 from __future__ import annotations
 
@@ -24,12 +24,13 @@ import inspect
 import typing as t
 
 import attrs
+from attrs.validators import instance_of
 from typing_extensions import Self, dataclass_transform
 
-from netgraph._edge import CanvasEdge as CanvasEdgeImpl
-from netgraph._node import CanvasNode as CanvasNodeImpl
-from netgraph._objects import _ObjectContainer as ObjectContainerImpl
-from netgraph.api import _edge, ObjectContainer
+from netgraph.impl._edge import CanvasEdge as CanvasEdgeImpl
+from netgraph.impl._node import CanvasNode as CanvasNodeImpl
+from netgraph.impl._objects import _ObjectContainer as ObjectContainerImpl
+from netgraph.api import _edge, ObjectContainer, _config as _config_proto # prevent name shadowing in attrs
 
 if t.TYPE_CHECKING:
     from netgraph.api import CanvasEdge, CanvasNode
@@ -39,7 +40,7 @@ __all__: t.Sequence[str] = ("NetConfig", "EdgeConfig", "NodeConfig", "EdgeTextCo
 C = t.TypeVar("C")
 T = t.TypeVar("T")
 
-class ReactiveField(t.Generic[C, T]):
+class ReactiveField(_config_proto.ReactiveField[C, T]):
     __slots__: t.Sequence[str] = ("_value", "_observers")
 
     def __init__(self, value: T) -> None:
@@ -118,7 +119,7 @@ def reactive(cls: type[_ClassT]) -> type[_ClassT]:
     # Filter out the fields that are marked as reactive by their annotation
     annotations = t.get_type_hints(cls)
     for name, annotation in annotations.items():
-        if getattr(annotation, "__origin__", None) is ReactiveField:
+        if getattr(annotation, "__origin__", None) is _config_proto.ReactiveField:
             field_names.append(name)
 
     # __post_init__ after dataclass initialization to set up reactive fields that are stored as private names
@@ -139,39 +140,40 @@ def reactive(cls: type[_ClassT]) -> type[_ClassT]:
     setattr(cls, "__attrs_post_init__", __post_init__)
     return cls
 
+
 @attrs.define(slots=False)
-class EdgeTextConfig:
-    gap: int = 0
-    color: str = "black"
+class EdgeTextConfig(_config_proto.EdgeTextConfig):
+    gap: int = attrs.field(default=0, validator=instance_of(int))
+    color: str = attrs.field(default="black")
 
 
 @attrs.define(slots=False)
-class EdgeConfig:
+class EdgeConfig(_config_proto.EdgeConfig):
     factory: type[CanvasEdge] = CanvasEdgeImpl
-    antialiased: bool = False
-    label_config: EdgeTextConfig = EdgeTextConfig(gap=20)
-    weight_config: EdgeTextConfig = EdgeTextConfig(gap=-20)
-    line_color: str = "black"
-    line_width: float = 1.5
-    drag_mode: _edge.DragMode = _edge.DragMode.COMPONENT_ONLY
-    offset: int = -150
-    line_segments: int = 30
+    antialiased: bool = attrs.field(default=False, validator=instance_of(bool))
+    label_config: _config_proto.EdgeTextConfig = attrs.field(factory=lambda: EdgeTextConfig(gap=20))
+    weight_config: _config_proto.EdgeTextConfig = attrs.field(factory=lambda: EdgeTextConfig(gap=-20))
+    line_color: str = attrs.field(default="black")
+    line_width: float = attrs.field(default=1.5, validator=instance_of(float))
+    drag_mode: _edge.DragMode = attrs.field(default=_edge.DragMode.COMPONENT_ONLY)
+    offset: int = attrs.field(default=-150, validator=instance_of(int))
+    line_segments: int = attrs.field(default=30, validator=instance_of(int))
 
 
 @attrs.define(slots=False)
-class NodeConfig:
+class NodeConfig(_config_proto.NodeConfig):
     factory: type[CanvasNode] = CanvasNodeImpl
-    antialiased: bool = False
-    enable_dragging: bool = True
-    label_color: str = "black"
+    antialiased: bool = attrs.field(default=False, validator=instance_of(bool))
+    enable_dragging: bool = attrs.field(default=True, validator=instance_of(bool))
+    label_color: str = attrs.field(default="black")
 
 
 @attrs.define(slots=False)
 @reactive
-class NetConfig:
-    enable_zoom: ReactiveField[Self, bool] = field(True)
-    zoom_in_limit: int = 10
-    zoom_out_limit: int = 10
-    edge_config: EdgeConfig = EdgeConfig()
-    node_config: NodeConfig = NodeConfig()
+class NetConfig(_config_proto.NetConfig):
+    enable_zoom: _config_proto.ReactiveField[_config_proto.NetConfig, bool] = field(True)
+    zoom_in_limit: int = attrs.field(default=10, validator=instance_of(int)) #10
+    zoom_out_limit: int = attrs.field(default=10, validator=instance_of(int))
+    edge_config: _config_proto.EdgeConfig = attrs.field(factory=EdgeConfig)
+    node_config: _config_proto.NodeConfig = attrs.field(factory=NodeConfig)
     object_container: type[ObjectContainer] = ObjectContainerImpl

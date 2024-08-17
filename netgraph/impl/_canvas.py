@@ -24,7 +24,7 @@ import typing as t
 
 import attrs
 
-from netgraph._objects import _convert_to_canvas_objects
+from netgraph.impl._objects import _convert_to_canvas_objects
 from netgraph._types import CanvasObjectsLike
 from netgraph.api import ActiveNode as AbstractActiveNode
 from netgraph.api import NetCanvas as AbstractNetCanvas

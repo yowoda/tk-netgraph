@@ -15,13 +15,9 @@
 #
 # You should have received a copy of the GNU Lesser General Public License
 # along with tk-netgraph. If not, see <https://www.gnu.org/licenses/>.
-"""A powerful graph engine for tkinter"""
 
 from netgraph.impl._canvas import *
-from netgraph.impl._config import *
 from netgraph.impl._edge import *
-from netgraph._netmanager import *
 from netgraph.impl._node import *
 from netgraph.impl._objects import *
-
-__version__ = "1.0.0"
+from netgraph.impl._config import *

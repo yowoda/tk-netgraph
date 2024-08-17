@@ -21,8 +21,8 @@ from __future__ import annotations
 import tkinter as tk
 import typing as t
 
-from netgraph import NetConfig, NodeConfig, EdgeConfig
-from netgraph.api import _edge, _node
+from netgraph import NetConfig
+from netgraph.api import _edge, _node, _config
 
 if t.TYPE_CHECKING:
     from netgraph.api import NetCanvas
@@ -50,7 +50,7 @@ class _ComponentManager(dict[str, list[t.Union[_node.CanvasNode, _edge.CanvasEdg
 class NetManager:
     __slots__: t.Sequence[str] = ("_canvas", "_config", "_component_manager", "_nodes", "_zoom_in_count", "_zoom_out_count", "_zoom_bind_id")
 
-    def __init__(self, canvas: NetCanvas, config: t.Optional[NetConfig] = None) -> None:
+    def __init__(self, canvas: NetCanvas, config: t.Optional[_config.NetConfig] = None) -> None:
         self._canvas = canvas
 
         self._config = config if config is not None else NetConfig()
@@ -88,10 +88,10 @@ class NetManager:
         return self._component_manager
 
     @property
-    def config(self) -> NetConfig:
+    def config(self) -> _config.NetConfig:
         return self._config
 
-    def create_node(self, label: str, config: t.Optional[NodeConfig] = None) -> _node.CanvasNode:
+    def create_node(self, label: str, config: t.Optional[_config.NodeConfig] = None) -> _node.CanvasNode:
         if config is None:
             config = self._config.node_config
 
@@ -105,7 +105,7 @@ class NetManager:
         nodes: tuple[_node.CanvasNode, _node.CanvasNode],
         label: str,
         weight: t.Optional[int] = None,
-        config: t.Optional[EdgeConfig] = None,
+        config: t.Optional[_config.EdgeConfig] = None,
     ) -> _edge.CanvasEdge:
         if config is None:
             config = self._config.edge_config

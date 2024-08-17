@@ -27,8 +27,7 @@ from netgraph.api import _objects
 if t.TYPE_CHECKING:
     import tkinter as tk
 
-    from netgraph._config import EdgeTextConfig
-    from netgraph.api import NetCanvas, CanvasEdge
+    from netgraph.api import NetCanvas, CanvasEdge, EdgeTextConfig
     from netgraph._types import CanvasObjectsLike
 
 __all__: t.Sequence[str] = ("CanvasObject", "CanvasEdgeTextObject")
