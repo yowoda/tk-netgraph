@@ -24,7 +24,7 @@ import typing as t
 if t.TYPE_CHECKING:
     import tkinter as tk
 
-    from netgraph import NetCanvas
+    from netgraph.api import NetCanvas
 
 
 @t.runtime_checkable

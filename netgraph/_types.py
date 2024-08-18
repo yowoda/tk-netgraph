@@ -17,7 +17,38 @@
 # along with tk-netgraph. If not, see <https://www.gnu.org/licenses/>.
 
 import typing as t
+from typing_extensions import ParamSpec, TypeAlias
 
-from netgraph.api import CanvasObject
+if t.TYPE_CHECKING:
+    from netgraph.api import CanvasObject
 
-CanvasObjectsLike = t.Generator[t.Union[int, CanvasObject], None, None]
+__all__: t.Sequence[str] = ("CanvasObjectsLike", "copy_signature")
+
+CanvasObjectsLike: TypeAlias = "t.Generator[t.Union[int, CanvasObject], None, None]"
+
+_P = ParamSpec("_P")
+_OriginReturnT = t.TypeVar("_OriginReturnT")
+_NewReturnT = t.TypeVar("_NewReturnT")
+
+@t.overload
+def copy_signature(
+    origin: t.Callable[_P, _OriginReturnT], return_type: None=None
+) -> t.Callable[[t.Callable[..., t.Any]], t.Callable[_P, _OriginReturnT]]:
+    ...
+
+@t.overload
+def copy_signature(
+    origin: t.Callable[_P, _OriginReturnT], return_type: type[_NewReturnT]
+) -> t.Callable[[t.Callable[..., t.Any]], t.Callable[_P, _NewReturnT]]:
+    ...
+
+def copy_signature(
+    origin: t.Callable[_P, _OriginReturnT], return_type: t.Optional[type[_NewReturnT]]=None
+) -> t.Callable[[t.Callable[..., t.Any]], t.Callable[_P, t.Union[_NewReturnT, _OriginReturnT]]]:
+    def inner(target: t.Callable[..., t.Any]) -> t.Callable[_P, t.Union[_OriginReturnT, _NewReturnT]]:
+        if return_type is None:
+            return t.cast(t.Callable[_P, _OriginReturnT], target)
+        
+        return t.cast(t.Callable[_P, _NewReturnT], target)
+    
+    return inner

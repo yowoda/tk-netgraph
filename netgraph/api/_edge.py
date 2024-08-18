@@ -70,7 +70,7 @@ class CanvasEdge(abc.ABC, CanvasAware):
 
     @component_id.setter
     @abc.abstractmethod
-    def component_id(self, value: t.Optional[str]) -> None:
+    def component_id(self, id_: t.Optional[str]) -> None:
         """Sets the new component id of the edge"""
 
     @property
@@ -108,7 +108,7 @@ class CanvasEdge(abc.ABC, CanvasAware):
 
     @position.setter
     @abc.abstractmethod
-    def position(self, value: int) -> None:
+    def position(self, pos: int) -> None:
         """
         Set the position of the edge to `value`
         """

@@ -73,13 +73,14 @@ class NetManager:
             self._zoom_bind_id = None
 
     def zoom(self, event: tk.Event) -> None:
+        x, y = self._canvas.canvasx(event.x), self._canvas.canvasy(event.y)
         if event.delta > 0 and self._zoom_in_count < self._config.zoom_in_limit:
-            self._canvas.scale(tk.ALL, event.x, event.y, 1.1, 1.1)
+            self._canvas.scale(tk.ALL, x, y, 1.1, 1.1)
             self._zoom_in_count += 1
             self._zoom_out_count -= 1
 
         elif event.delta < 0 and self._zoom_out_count < self._config.zoom_out_limit:
-            self._canvas.scale(tk.ALL, event.x, event.y, 0.9, 0.9)
+            self._canvas.scale(tk.ALL, x, y, 0.9, 0.9)
             self._zoom_out_count += 1
             self._zoom_in_count -= 1
 

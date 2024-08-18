@@ -58,7 +58,7 @@ class CanvasNode(abc.ABC, CanvasAware):
 
     @component_id.setter
     @abc.abstractmethod
-    def component_id(self, value: t.Optional[str]) -> None:
+    def component_id(self, id_: t.Optional[str]) -> None:
         """Sets the new component id of the node"""
 
     @property

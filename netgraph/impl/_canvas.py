@@ -29,9 +29,9 @@ from netgraph._types import CanvasObjectsLike
 from netgraph.api import ActiveNode as AbstractActiveNode
 from netgraph.api import NetCanvas as AbstractNetCanvas
 from netgraph._vendor.ctk_canvas import CTkCanvas
+from netgraph._types import copy_signature, CanvasObjectsLike
 
 if t.TYPE_CHECKING:
-    from netgraph._types import CanvasObjectsLike
     from netgraph.api import CanvasNode, ObjectContainer
 
 __all__: t.Sequence[str] = ("NetCanvas",)
@@ -86,15 +86,7 @@ class NetCanvas(CTkCanvas, AbstractNetCanvas): # inherit from CTKCanvas first so
     # Add consistent "yield from " to the current interface
     # Not sure if I like this, we will see
 
-    @functools.wraps(tk.Canvas.create_oval)
-    def create_oval(self, *args, **kwargs) -> CanvasObjectsLike:
-        yield super().create_oval(*args, **kwargs)
-
-    @functools.wraps(tk.Canvas.create_line)
-    def create_line(self, *args, **kwargs) -> CanvasObjectsLike:
-        yield super().create_line(*args, **kwargs)
-
-    @functools.wraps(tk.Canvas.create_line)
+    @copy_signature(tk.Canvas.create_line, CanvasObjectsLike)
     def create_aa_line(self, *args, **kwargs) -> CanvasObjectsLike:
         kwargs["fill"] = "#000"
         yield from self.create_line(*args, **kwargs)
@@ -102,9 +94,13 @@ class NetCanvas(CTkCanvas, AbstractNetCanvas): # inherit from CTKCanvas first so
         kwargs["width"] += 0.5
         yield from self.create_line(*args, **kwargs)
 
+    @copy_signature(CTkCanvas.create_aa_circle, CanvasObjectsLike)
+    def create_aa_circle(self, *args, **kwargs) -> CanvasObjectsLike: # pyright: ignore[reportIncompatibleMethodOverride]
+        yield super().create_aa_circle(*args, **kwargs)
+
     def create_aa_border_circle(self, pos: tuple[int, int], radius: int, width: int) -> CanvasObjectsLike:
-        yield self.create_aa_circle(*pos, radius, fill="black")
-        yield self.create_aa_circle(*pos, radius - width, fill=self.cget("bg"))
+        yield from self.create_aa_circle(*pos, radius, fill="black")
+        yield from self.create_aa_circle(*pos, radius - width, fill=self.cget("bg"))
 
     def create_aa_double_circle(self, pos: tuple[int, int], space: int, radius: int) -> CanvasObjectsLike:
         yield from self.create_aa_border_circle(pos, radius, 2)

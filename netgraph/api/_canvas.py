@@ -16,37 +16,31 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with tk-netgraph. If not, see <https://www.gnu.org/licenses/>.
 
+# pyright: reportIncompatibleMethodOverride=false
+
 from __future__ import annotations
 
 import abc
-import functools
 import tkinter as tk
 import typing as t
 
 from netgraph._vendor.ctk_canvas import CTkCanvas
+from netgraph._types import copy_signature, CanvasObjectsLike
 
 if t.TYPE_CHECKING:
-    from netgraph._types import CanvasObjectsLike
     from netgraph.api import CanvasNode, ObjectContainer
 
 __all__: t.Sequence[str] = ("ActiveNode", "NetCanvas")
 
 
-class ActiveNode(abc.ABC):
-    __slots__: t.Sequence[str] = ()
-
-    @property
-    @abc.abstractmethod
-    def node(self) -> CanvasNode:
-        """
-        The node object that is currently active.
-        It's the node that was left-clicked and that started the dynamic edge
-        """
-
-    @property
-    @abc.abstractmethod
-    def edge_container(self) -> ObjectContainer:
-        """The container that holds the dynamic edge lines"""
+class ActiveNode(t.Protocol):
+    node: CanvasNode
+    """
+    The node object that is currently active.
+    It's the node that was left-clicked and that started the dynamic edge
+    """
+    edge_container: ObjectContainer
+    """The container that holds the dynamic edge lines"""
 
 
 class NetCanvas(abc.ABC, tk.Canvas):
@@ -73,12 +67,20 @@ class NetCanvas(abc.ABC, tk.Canvas):
     def create_aa_double_circle(self, pos: tuple[int, int], space: int, radius: int) -> CanvasObjectsLike:
         """Creates an anti-aliased circle with two borders"""
 
-    @functools.wraps(CTkCanvas.create_aa_circle)
+    @copy_signature(tk.Canvas.create_oval, CanvasObjectsLike)
+    def create_oval(self, *args, **kwargs) -> CanvasObjectsLike:
+        yield super().create_oval(*args, **kwargs)
+
+    @copy_signature(tk.Canvas.create_line, CanvasObjectsLike)
+    def create_line(self, *args, **kwargs) -> CanvasObjectsLike:
+        yield super().create_line(*args, **kwargs)
+
+    @copy_signature(CTkCanvas.create_aa_circle, CanvasObjectsLike)
     @abc.abstractmethod
     def create_aa_circle(self, *args, **kwargs) -> CanvasObjectsLike:
         """Creates an anti-aliased circle"""
 
-    @functools.wraps(tk.Canvas.create_line)
+    @copy_signature(tk.Canvas.create_line, CanvasObjectsLike)
     @abc.abstractmethod
     def create_aa_line(self, *args, **kwargs) -> CanvasObjectsLike:
         """Creates an anti-aliased line"""
